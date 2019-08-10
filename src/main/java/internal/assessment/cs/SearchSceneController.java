@@ -53,16 +53,10 @@ public class SearchSceneController extends InfoHelper implements Initializable {
             txtAlert.setText("No results found...");
         }
     }
-
     public void handleEditAction(ActionEvent actionEvent) {
         setTmpFileName(resultsFileNames.get(lsvResults.getSelectionModel().getSelectedIndex()));
         ((Stage)btnCancel.getScene().getWindow()).close();
     }
-
-    public void handleViewAction(ActionEvent actionEvent) {
-
-    }
-
     public void handleCancelAction(ActionEvent actionEvent) {
         closeWindow();
     }
@@ -76,6 +70,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
 
     public void handleGoToTagAction(ActionEvent actionEvent) { // when user presses "ENTER" key in txtKeyphrase
         //cbChooseTag.getEditor().textProperty().
+        //TODO
         cbChooseTag.getSelectionModel().selectFirst();
     }
 
