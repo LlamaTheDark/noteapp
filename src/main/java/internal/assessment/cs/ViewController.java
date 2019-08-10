@@ -44,6 +44,7 @@ public class ViewController extends InfoHelper implements Initializable {
 
     //under edit
     public MenuItem menuBtnDeleteFile; //TODO: VERY IMPORTANT rename all methods associated with a button or action to 'handle...Action'
+    public MenuItem menuBtnRender;
 
     //under file
     public MenuItem menuBtnCreateNewNote;
@@ -52,11 +53,10 @@ public class ViewController extends InfoHelper implements Initializable {
     public MenuItem menuBtnSetNotesFolder;
 
     public Button btnSearch;
-    public Button btnPlaintext;
-    public Button btnRender;
 
     public MenuBar menu;
     public TabPane tabPane;
+    public WebView wbvPreview;
 
 
     //
@@ -67,6 +67,7 @@ public class ViewController extends InfoHelper implements Initializable {
     MutableDataSet options;
     Parser parser;
     HtmlRenderer renderer;
+    WebEngine webEngine;
     // markdown variables
 
     //
@@ -174,35 +175,15 @@ public class ViewController extends InfoHelper implements Initializable {
         System.out.println("this doesn't do anything yet"); // TODO: have this do something or get rid of it.
     }
     public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
-        if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
+        /*if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-
-            Stage stage = new Stage(); // the following code is from https://wiki.openjdk.java.net/display/OpenJFX/Projects+and+Components (with the modification of tabContent)
-
-            stage.setTitle("Preview"); // TODO: fix this stupidly long code, put another .fxml file in resources or something
-            stage.setWidth(500);
-            stage.setHeight(500);
-            Scene scene = new Scene(new Group());
-
-            VBox root = new VBox();
-
-            final WebView browser = new WebView();
-            final WebEngine webEngine = browser.getEngine();
-
-            ScrollPane scrollPane = new ScrollPane();
-            browser.setFontScale(0.8);
-            scrollPane.setContent(browser);
+            System.out.println(tabContent);
             webEngine.loadContent(markdownToHTML(tabContent));
-
-            root.getChildren().addAll(scrollPane);
-            scene.setRoot(root);
-
-            stage.setScene(scene);
-            stage.show();
-
-        }else{ // TODO: fix this garbage idk why it doesn't just BLOODy work!!!
-            model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
-        }
+        }else{
+            Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
+        }*/
+        String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
+        model.parseTextForTagsAndLineBreaks(tabContent);
         /*
         WebEngine htmlEngine = (((WebView) ((ScrollPane) tmp.getContent()).getContent()).getEngine()); // finds the webengine in the corresponding scrollpane/webview
         htmlEngine.loadContent("<b>biggie cheese</b>");
@@ -286,7 +267,10 @@ public class ViewController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //can't find this setting in scenebuilder, TODO: add it to fxml file just before you finish this whole thing
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+        wbvPreview.setFontScale(0.8);
+        webEngine = wbvPreview.getEngine();
     }
 
 }

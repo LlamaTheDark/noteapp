@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -21,12 +22,11 @@ public class SearchSceneController extends InfoHelper implements Initializable {
     public ComboBox cbChooseTag;
     public ListView<String> lsvResults;
     public Button btnEdit;
-    public Button btnView;
     public Button btnCancel;
     public TextField txtKeyword;
     public Text txtAlert;
 
-    LinkedList<String> resultsFileNames = new LinkedList<>();
+    private LinkedList<String> resultsFileNames = new LinkedList<>();
 
     public void handleShowResultsAction(ActionEvent actionEvent) {
         lsvResults.getItems().clear();
@@ -68,18 +68,15 @@ public class SearchSceneController extends InfoHelper implements Initializable {
     }
 
     public void handleMouseClickAction(MouseEvent mouseEvent) {
-        if(btnEdit.isDisabled() || btnView.isDisabled()){
+        if(btnEdit.isDisabled()){
             btnEdit.setDisable(false);
-            btnView.setDisable(false);
         }
         //selectedFilename = lsvResults.getSelectionModel().getSelectedIndex();
     }
 
-    public void handleMouseExitAction(MouseEvent mouseEvent) {
-        if (lsvResults.getSelectionModel().getSelectedItem()==null){
-            btnEdit.setDisable(true);
-            btnView.setDisable(true);
-        }
+    public void handleGoToTagAction(ActionEvent actionEvent) { // when user presses "ENTER" key in txtKeyphrase
+        //cbChooseTag.getEditor().textProperty().
+        cbChooseTag.getSelectionModel().selectFirst();
     }
 
     public void closeWindow(){
@@ -88,6 +85,8 @@ public class SearchSceneController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        //cbChooseTag.getItems().addAll(new String[]{"yes please", "do it hard"});
     }
+
+
 }

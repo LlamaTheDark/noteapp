@@ -15,8 +15,8 @@
             <Font size="19.0" />
          </font>
       </Text>
-      <TextField fx:id="txtKeyword" layoutX="14.0" layoutY="42.0" prefHeight="25.0" prefWidth="395.0" />
-      <Text layoutX="14.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Narrow by tag:">
+      <TextField fx:id="txtKeyphrase" layoutX="14.0" layoutY="42.0" onAction="#handleGoToTagAction" prefHeight="25.0" prefWidth="395.0" />
+      <Text layoutX="14.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search by tag:">
          <font>
             <Font size="19.0" />
          </font>
@@ -27,13 +27,8 @@
          </font>
       </Button>
       <ComboBox fx:id="cbChooseTag" editable="true" layoutX="14.0" layoutY="109.0" prefHeight="25.0" prefWidth="395.0" promptText="-- no tag --" />
-      <ListView fx:id="lsvResults" fixedCellSize="30.0" layoutX="14.0" layoutY="189.0" onMouseClicked="#handleMouseClickAction" onMouseExited="#handleMouseExitAction" prefHeight="214.0" prefWidth="395.0" />
+      <ListView fx:id="lsvResults" fixedCellSize="30.0" layoutX="14.0" layoutY="189.0" onMouseClicked="#handleMouseClickAction" prefHeight="214.0" prefWidth="395.0" />
       <Button fx:id="btnEdit" disable="true" layoutX="14.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleEditAction" prefHeight="31.0" prefWidth="75.0" text="EDIT">
-         <font>
-            <Font size="15.0" />
-         </font>
-      </Button>
-      <Button fx:id="btnView" disable="true" layoutX="100.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleViewAction" prefHeight="31.0" prefWidth="75.0" text="VIEW">
          <font>
             <Font size="15.0" />
          </font>

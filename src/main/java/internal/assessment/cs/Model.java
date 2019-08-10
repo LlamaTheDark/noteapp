@@ -4,7 +4,6 @@ import javafx.scene.control.Alert;
 
 import java.awt.*;
 import java.net.URI;
-import java.util.LinkedList;
 
 public class Model {
 
@@ -96,7 +95,7 @@ public class Model {
     public String arrayToString(String[] arr) {
         String toString = "";
         for (String a: arr) {
-            toString+=a;
+            toString+=a+" ";
         }
         return toString;
     }
@@ -123,34 +122,13 @@ public class Model {
         }
         return false;
     }
-}
+
+    public String parseTextForTagsAndLineBreaks(String text){
+        String[] parsedText = text.split(" ");
+        System.out.println(arrayToString(parsedText));
 
 
-/*
-class Tag {
-    private String id;
-    private LinkedList<String> locations = new LinkedList<String>(); // stores the name of the file(s) that the tag is in so the program knows what to search
-    private Tag next;
-
-    // Constructor
-    public Tag (String id){
-
-    }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-    public LinkedList<String> getContent() { return locations; }
-    public void setContent(LinkedList<String> locations) { this.locations = locations; }
-
-    public Tag getNext(){ return next; }
-
-    public void addContent(String location){ this.locations.add(location); }
-    public void addTag(String id, String location){
-        this.id = id;
-        addContent(location);
-
+        return arrayToString(parsedText);
     }
 
 }
- */
-
