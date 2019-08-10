@@ -5,18 +5,21 @@ public class MatchList {
     String filename;
     private int length = 0;
 
-    public int getlength() {return length;}
+    public int getLength() {return length;}
 
     public MatchList(Node head) { this.head = head; length++; }
     public MatchList(String filename) {this.filename = filename;}
 
+    public String getFilename(){ return filename;}
+
     public void addNode(Node node) {
         if (!isEmpty()) {
-            Node tmp = head;
-            while(tmp.next!=null) {
-                tmp=tmp.next;
+            Node tmp = new Node();
+            tmp.next = head;
+            while(tmp.next.next!=null) {
+                tmp.next=tmp.next.next;
             }
-            tmp.next=node;
+            tmp.next.next=node;
         }else {
             head = node;
         }
@@ -38,6 +41,39 @@ public class MatchList {
         }else { System.out.println("There were no matches found in the file at " + filename + "\n"); }
         System.out.println("-------------------------------------------------------------------------------\n");
     }
+
+    public String toSearchResult(int index){
+        return "In \'" + getFilename() + "\', line " + getLineNum(index) + ": \"..." + getSampleText(index) + "...\"";
+    }
+
+    public String getSampleText(int index){
+        int i = 0;
+        if (!isEmpty()){
+            Node tmp = new Node();
+            tmp.next = head;
+            while(tmp.next.next!=null && i != index){ // if index is longer than the list it will return the last value
+                tmp.next=tmp.next.next;
+                i++;
+            }
+            return tmp.next.getSampleText();
+        }else{
+            return "This array is empty.";
+        }
+    }
+    public int getLineNum(int index){
+        int i = 0;
+        if (!isEmpty()){
+            Node tmp = new Node();
+            tmp.next = head;
+            while(tmp.next.next!=null && i != index){ // if index is longer than the list it will return the last value
+                tmp.next=tmp.next.next;
+                i++;
+            }
+            return tmp.next.getLineNum();
+        }else{
+            return 0;
+        }
+    }
 }
 
 class Node{
@@ -49,6 +85,7 @@ class Node{
         this.sampleText = sampleText;
         this.lineNum = lineNum;
     }
+    public Node(){}
 
     public String getSampleText() { return sampleText;}
     public void setSampleText(String sampleText) {this.sampleText = sampleText;}

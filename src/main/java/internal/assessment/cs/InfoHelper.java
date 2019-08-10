@@ -2,8 +2,12 @@ package internal.assessment.cs;
 
 public class InfoHelper{
     private String infoFilePath = "C:\\NoteAppData\\info.txt";
-    FileHelper fh = new FileHelper(infoFilePath);
+    private FileHelper fh = new FileHelper(infoFilePath);
     private String[] infoFileContent = (fh.readFile());
+
+    private static String tmpFileName;
+    public static String getTmpFileName() { return tmpFileName; }
+    public static void setTmpFileName(String newTmpFileName) { tmpFileName = newTmpFileName; }
 
     public String getInfoFilePath(){return infoFilePath;}
     public String[] getInfoContent(){return infoFileContent;}
@@ -33,6 +37,8 @@ public class InfoHelper{
         infoHelp.writeToFile(infoFileContent[0] + "\n" + dbxAccessKey);
         infoFileContent = fh.readFile();
     }
+
+
 }
 
 

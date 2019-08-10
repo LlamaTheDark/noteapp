@@ -60,6 +60,11 @@ public class Model {
     }
 
     public static int[] getTagLimits(String tag, String[] text){
+
+        boolean endTagExists = false;
+        if (tag.equals("")){
+            return new int[]{0, text.length-1};
+        }
         String[][] splitText = new String[text.length][0]; // first splits the text by words (as defined by spaces)
         for (int i = 0; i < text.length; i++) {
             splitText[i] = text[i].split(" ");
@@ -69,17 +74,19 @@ public class Model {
         limits[1] = text.length-1; // the two limits will be the bounds by which the search will take place
 
         try {
-            while(!splitText[limits[0]][0].equals("#" + tag + "#")) { // searches for the tag format #abc# and for the next blank line after that.
-                // the algorithm starts from the end of the doc to efficiency
-                if(splitText[limits[0]].length-1==0) { //
+            while(!splitText[limits[0]][0].equals("#" + tag + "#")) {  // searches for the tag format #abc# and for the next blank line after that.
+                if (splitText[limits[0]][0].equals("#/" + tag + "#")){ // the algorithm starts from the end of the doc to efficiency
                     limits[1] = limits[0];
+                    endTagExists = true;
+                } else if(splitText[limits[0]].length-1==0 && !endTagExists) { // isEndTagFound allows the algorithm to say "stop searching for
+                    limits[1] = limits[0];                                      // blank lines because this person has set an end tag location
                 }
                 limits[0]--; // because the search starts from the end, the index of searching goes back one each time '--' instead of forward '++'
             }
         }catch(ArrayIndexOutOfBoundsException e){ // if the limits[0] variable goes too low, it will throw an exception, and we will know that
             // the program did not find any matches for the tag, and will by default search the whole document
-            System.out.println("\t[The tag does not exist in this file... searching whole file instead.]\n"); // and not narrow it by the tag
-            return new int[] {0, text.length-1};
+            //System.out.println("\t[The tag does not exist in this file... searching whole file instead.]\n"); // and not narrow it by the tag
+            return new int[] {0, -1}; // won't search the file.
         }
         limits[0]++; // the upper limit for the tag (the point at which the search will start) must be appended by one as otherwise it will include the tag
         // itself in the search

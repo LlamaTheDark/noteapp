@@ -2,6 +2,7 @@ package internal.assessment.cs;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
@@ -27,11 +28,13 @@ import com.vladsch.flexmark.util.options.MutableDataSet;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 
 import static spark.Spark.*;
 
-public class ViewController extends InfoHelper{
+public class ViewController extends InfoHelper implements Initializable {
 
     Model model = new Model();
 
@@ -102,23 +105,7 @@ public class ViewController extends InfoHelper{
         }
     }
 
-    public void createNewNote(String content, String title){ // for when a specified file is requested to be opened
-        if(tabCount==1){
-            tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-            tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        }
-        Tab newTab = new Tab(title);
-        TextArea newTabTxt = new TextArea();
-        newTabTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, 12));
-        newTabTxt.setText(content);
-        newTab.setContent(newTabTxt);
-        tabPane.getTabs().add(newTab);
-    }
     public void handleCreateNewNoteAction(ActionEvent actionEvent) { // for when a new note is requested to be created
-        if(tabCount==1){ // allows the tab to be closed when it is selected, TODO: Figure out how to have this happen automatically (w/ constructor maybe)
-            tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
-            tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        }
         Tab newTab = new Tab("Tab_" + ++tabCount); // TODO: have way to change tab name (maybe in the save / save as... function)
         TextArea newTabTxt = new TextArea(); // creates text area
         newTabTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, 12)); // sets text area font
@@ -224,16 +211,28 @@ public class ViewController extends InfoHelper{
     }
 
     public void handleSearchAction(ActionEvent actionEvent) {
-
+        try {
+            setTmpFileName("");
+            Stage searchStage = new Stage();
+            searchStage.setTitle("Search Files");
+            searchStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("searchScene.fxml")), 420, 465));
+            searchStage.showAndWait();
+            if(!getTmpFileName().equals("")){
+                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"\\"+getTmpFileName())).readFile()), getTmpFileName());
+            }
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
+
     public void handleAuthDropboxAction(ActionEvent actionEvent) {
         DropboxHelper dh = new DropboxHelper();
         if(!dh.accountHasBeenLinked()){
             try {
-                Stage noteFolderStage = new Stage();
-                noteFolderStage.setTitle("Authorize Dropbox");
-                noteFolderStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("authorizeDropboxScene.fxml")), 472, 474));
-                noteFolderStage.show();
+                Stage authDbxStage = new Stage();
+                authDbxStage.setTitle("Authorize Dropbox");
+                authDbxStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("authorizeDropboxScene.fxml")), 472, 474));
+                authDbxStage.show();
             }catch(IOException e){
                 e.printStackTrace();
                 System.out.println("Error: missing resource...");
@@ -275,7 +274,24 @@ public class ViewController extends InfoHelper{
         return renderedHTML;
     } // the code must manually place line breaks (<br>) for tags.
     // commonmark markdown does not support soft line breaks as <br>
+
+    public void createNewNote(String content, String title){ // for when a specified file is requested to be opened
+        Tab newTab = new Tab(title);
+        TextArea newTabTxt = new TextArea();
+        newTabTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, 12));
+        newTabTxt.setText(content);
+        newTab.setContent(newTabTxt);
+        tabPane.getTabs().add(newTab);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+    }
+
 }
+
+
 
 /*
 TODO: start server: get("/hello", (req, res) -> "Hello World");

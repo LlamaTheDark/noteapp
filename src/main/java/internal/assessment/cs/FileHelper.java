@@ -55,11 +55,10 @@ public class FileHelper{
         }
     }
 
-    public void searchFileForPhrase(String keyphrase, String tag) {
+    public MatchList searchFileForPhrase(String keyphrase, String tag) {
+        MatchList ml = new MatchList(new File(FILEPATH).getName());
 
-        MatchList ml = new MatchList(FILEPATH);
-
-        boolean isMatch = true;
+        boolean isMatch;
         String[] text = readFile();
         int[] limits = Model.getTagLimits(tag, text); // limits[0] = start, [1] = end
         String[][] splitText = new String[text.length][0];
@@ -74,7 +73,6 @@ public class FileHelper{
                 int keyPhraseCount = 0;
                 int tmpCount = j;
 
-
                 while (keyPhraseCount <= splitText[i].length - 1 && keyPhraseCount <= splitKeyphrase.length - 1 && tmpCount <= splitText[i].length - 1 && isMatch) {
                     if (!splitKeyphrase[keyPhraseCount].equals(splitText[i][tmpCount])) {
                         isMatch = false;
@@ -84,10 +82,12 @@ public class FileHelper{
                     }
                 }
                 if (keyPhraseCount == splitKeyphrase.length && keyPhraseCount != 0) {
+                    //System.out.println(Model.getSurroundingText(splitText[i], j, j + splitKeyphrase.length - 1));
                     ml.addNode(ml.newNode(Model.getSurroundingText(splitText[i], j, j + splitKeyphrase.length - 1), i + 1));
                 }
             }
         }
-        ml.printList();
+
+        return ml;
     }
 }
