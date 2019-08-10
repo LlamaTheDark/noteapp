@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.prefs.*;
 
 
@@ -57,22 +58,38 @@ public class DropboxHelper extends InfoHelper{ //TODO: store the user informatio
             accessToken = authFinish.getAccessToken();
             client = new DbxClientV2(config, accessToken);
             setDbxAccessToken(accessToken);
+            setTmpInfo("successful authorization");
             return new String[]{getClientName(), authFinish.getUserId(), authFinish.getAccessToken()};
         } catch (DbxException ex) {
+            setTmpInfo("oof");
             System.err.println("Error in DbxWebAuth.authorize: " + ex.getMessage());
         }
         return new String[3];
     }
 
     public boolean uploadFile(){ // returns whether or not the sync was successful
-        // Upload "test.txt" to Dropbox
-        try (InputStream in = new FileInputStream(getNoteFolderPath() + "\\Yeetballs.txt")) {
-            FileMetadata metadata = client.files().uploadBuilder("/yeetballs.txt")
-                    .uploadAndFinish(in);
-        } catch (IOException | DbxException e) {
-            e.printStackTrace();
+        File dir = new File(getNoteFolderPath());
+        for (File f : Objects.requireNonNull(dir.listFiles())) {
+
+            try (InputStream in = new FileInputStream(getNoteFolderPath() + "\\Yeetballs.txt")) {
+                FileMetadata metadata = client.files().uploadBuilder("/noteStorage/yeetballs.txt")
+                        .uploadAndFinish(in);
+            } catch (IOException | DbxException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
         return true;
+    }
+
+    public boolean createFolder(){
+        try {
+            client.files().createFolderV2("/noteStorage");
+            return true;
+        } catch (DbxException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
 

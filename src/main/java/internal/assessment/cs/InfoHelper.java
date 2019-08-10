@@ -4,9 +4,9 @@ public class InfoHelper{
     private String infoFilePath = "C:\\NoteAppData\\info.txt";
     private FileHelper fh = new FileHelper(infoFilePath);
 
-    private static String tmpFileName;
-    public static String getTmpFileName() { return tmpFileName; }
-    public static void setTmpFileName(String newTmpFileName) { tmpFileName = newTmpFileName; }
+    private static String tmpInfo;
+    public static String getTmpInfo() { return tmpInfo; }
+    public static void setTmpInfo(String newTmpFileName) { tmpInfo = newTmpFileName; }
 
     public String getInfoFilePath(){return infoFilePath;}
 

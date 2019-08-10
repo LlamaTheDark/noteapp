@@ -28,6 +28,7 @@ public class Main extends Application {
             fhInfo.writeFile("C:\\\n");
             fhTags.writeFile("");
         }
+
         launch(args);
 /*
         DropboxHelper dh = new DropboxHelper();

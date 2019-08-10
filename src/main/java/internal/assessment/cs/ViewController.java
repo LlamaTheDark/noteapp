@@ -5,19 +5,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import javafx.scene.web.WebView;
-import javafx.scene.control.ScrollPane;
 import javafx.stage.FileChooser;
 import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 // web view imports
@@ -43,6 +38,7 @@ public class ViewController extends InfoHelper implements Initializable {
     //under sync
     public MenuItem menuBtnAuthDropbox;
     public MenuItem menuBtnSyncFiles;
+    public MenuItem menuBtnAuthNewAcc;
 
     //under edit
     public MenuItem menuBtnDeleteFile; //TODO: VERY IMPORTANT rename all methods associated with a button or action to 'handle...Action'
@@ -79,6 +75,10 @@ public class ViewController extends InfoHelper implements Initializable {
     //private String noteFolderPath; // had to change this from the file to the String because files are immutable objects
                                    // now it just creates a new file with the noteFolderPath directory whenever it is needed.
     // for saving and opening files (the window helper from the OS) // TODO: eventually sync the files from the notes folder
+
+    //
+    DropboxHelper dh = new DropboxHelper();
+    // for dropbox
 
     //constructor//
     public ViewController(){ // constructor to set defaults for fileChooser and the noteFolder location
@@ -182,9 +182,6 @@ public class ViewController extends InfoHelper implements Initializable {
         }
     }
 
-    public void handleShowPlainTextAction(ActionEvent actionEvent) { // Hides WebView and shows plain text editor // to test if the tabPane is empty first, use the BooleanBinding class
-        System.out.println("this doesn't do anything yet"); // TODO: have this do something or get rid of it.
-    }
     public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
         if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
@@ -201,13 +198,13 @@ public class ViewController extends InfoHelper implements Initializable {
 
     public void handleSearchAction(ActionEvent actionEvent) {
         try {
-            setTmpFileName("");
+            setTmpInfo("");
             Stage searchStage = new Stage();
             searchStage.setTitle("Search Files");
             searchStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("searchScene.fxml")), 420, 465));
             searchStage.showAndWait();
-            if(!getTmpFileName().equals("")){
-                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"\\"+getTmpFileName())).readFile()), getTmpFileName());
+            if(!getTmpInfo().equals("")){
+                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"\\"+ getTmpInfo())).readFile()), getTmpInfo());
             }
         }catch(IOException e){
             e.printStackTrace();
@@ -215,13 +212,15 @@ public class ViewController extends InfoHelper implements Initializable {
     }
 
     public void handleAuthDropboxAction(ActionEvent actionEvent) {
-        DropboxHelper dh = new DropboxHelper();
         if(!dh.accountHasBeenLinked()){
             try {
                 Stage authDbxStage = new Stage();
                 authDbxStage.setTitle("Authorize Dropbox");
                 authDbxStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("authorizeDropboxScene.fxml")), 472, 474));
-                authDbxStage.show();
+                authDbxStage.showAndWait();
+                if(getTmpInfo().equals("successful authorization")){
+                    menuBtnSyncFiles.setDisable(false);
+                }
             }catch(IOException e){
                 e.printStackTrace();
                 System.out.println("Error: missing resource...");
@@ -229,6 +228,9 @@ public class ViewController extends InfoHelper implements Initializable {
         }else{
             Model.showInformationMsg("An account has already been linked.", "Account Name: " + dh.getClientName());
         }
+    }
+    public void handleSyncFilesAction(ActionEvent actionEvent) {
+        dh.createFolder();
     }
 
     public void handleOpenSparkServerAction(ActionEvent actionEvent) { get("/hello", (req, res) -> "Hello World"); }
@@ -287,8 +289,11 @@ public class ViewController extends InfoHelper implements Initializable {
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
         wbvPreview.setFontScale(0.85);
         webEngine = wbvPreview.getEngine();
-    }
 
+        if (dh.accountHasBeenLinked()){
+            menuBtnSyncFiles.setDisable(false);
+        }
+    }
 }
 
 

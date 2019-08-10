@@ -40,8 +40,9 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Sync">
                <items>
+                  <MenuItem fx:id="menuBtnSyncFiles" disable="true" mnemonicParsing="false" onAction="#handleSyncFilesAction" text="Sync Files" />
                   <MenuItem fx:id="menuBtnAuthDropbox" mnemonicParsing="false" onAction="#handleAuthDropboxAction" text="Authorize Dropbox" />
-                  <MenuItem fx:id="menuBtnSyncFiles" mnemonicParsing="false" text="Sync Files" />
+                  <MenuItem fx:id="menuBtnAuthNewAcc" mnemonicParsing="false" text="Authorize New Account" />
                </items>
             </Menu>
          </menus>

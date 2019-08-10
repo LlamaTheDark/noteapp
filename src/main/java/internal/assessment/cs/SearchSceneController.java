@@ -6,7 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -54,7 +53,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
         }
     }
     public void handleEditAction(ActionEvent actionEvent) {
-        setTmpFileName(resultsFileNames.get(lsvResults.getSelectionModel().getSelectedIndex()));
+        setTmpInfo(resultsFileNames.get(lsvResults.getSelectionModel().getSelectedIndex()));
         ((Stage)btnCancel.getScene().getWindow()).close();
     }
     public void handleCancelAction(ActionEvent actionEvent) {
