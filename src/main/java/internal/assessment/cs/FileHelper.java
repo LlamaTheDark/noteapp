@@ -7,6 +7,8 @@ public class FileHelper{
 
     Model model = new Model();
 
+    final String WITH_DELIMITERS = "\\t|,|;|!|-|:|@|_|\\*|/";
+
     final String FILEPATH; // each FileHelper class is specific to one file.
     // Thus, the FILENAME variable is final and cannot be
     // changed after instantiation in the constructor
@@ -63,8 +65,11 @@ public class FileHelper{
         int[] limits = Model.getTagLimits(tag, text); // limits[0] = start, [1] = end
         String[][] splitText = new String[text.length][0];
         for (int i = 0; i < text.length; i++) {
+            text[i] = text[i].replaceAll(WITH_DELIMITERS, "");
             splitText[i] = text[i].split("");
         }
+
+
         String[] splitKeyphrase = keyphrase.split("");
 
         for (int i = limits[0]; i <= limits[1]; i++) {

@@ -188,7 +188,7 @@ public class ViewController extends InfoHelper implements Initializable {
     public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
         if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-            webEngine.loadContent(model.parseTextForTags(markdownToHTML(tabContent))); // has to parse the html from markdown first, then split the tags
+            webEngine.loadContent(markdownToHTML(tabContent)); // has to parse the html from markdown first, then split the tags
         }else{                                                                                      // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
         }
@@ -256,9 +256,8 @@ public class ViewController extends InfoHelper implements Initializable {
 
     public String markdownToHTML(String markdown){ // code from flexmark github homepage
         Node doc = parser.parse(markdown);
-        String renderedHTML = renderer.render(doc);
         //System.out.println(renderedHTML);
-        return renderedHTML;
+        return model.parseTextForTags(renderer.render(doc));
     } // the code must manually place line breaks (<br>) for tags.
     // commonmark markdown does not support soft line breaks as <br>
 
@@ -270,6 +269,8 @@ public class ViewController extends InfoHelper implements Initializable {
         newTab.setContent(newTabTxt);
         tabPane.getTabs().add(newTab);
         menuBtnSave.setDisable(true);
+
+        handleShowRenderedTextAction(new ActionEvent());
 
         newTabTxt.textProperty().addListener(new ChangeListener<String>() { // adds event listener to detect when a change has been made to the text
             @Override                                                       // upon hearing a change, the new markdown text is rendered
