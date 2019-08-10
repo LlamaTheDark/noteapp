@@ -23,7 +23,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
     public ListView<String> lsvResults;
     public Button btnEdit;
     public Button btnCancel;
-    public TextField txtKeyword;
+    public TextField txtKeyphrase;
     public Text txtAlert;
 
     private LinkedList<String> resultsFileNames = new LinkedList<>();
@@ -32,7 +32,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
         lsvResults.getItems().clear();
         txtAlert.setText("");
 
-        if(!txtKeyword.getText().equals("")) {
+        if(!txtKeyphrase.getText().equals("")) {
             String tag;
             if(cbChooseTag.getValue()!=null){
                 tag = (String)cbChooseTag.getValue();
@@ -42,7 +42,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
             File dir = new File(getNoteFolderPath());
             for (File f : dir.listFiles()) {
                 FileHelper fh = new FileHelper(f.getPath());
-                MatchList ml = fh.searchFileForPhrase(txtKeyword.getText(), tag);
+                MatchList ml = fh.searchFileForPhrase(txtKeyphrase.getText(), tag);
                 for (int i = 0; i <= ml.getLength() - 1; i++) { // i is the index of the match in the match list
                     lsvResults.getItems().add(ml.toSearchResult(i));
                     resultsFileNames.add(ml.getFilename());

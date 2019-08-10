@@ -1,6 +1,8 @@
 package internal.assessment.cs;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -60,7 +62,7 @@ public class ViewController extends InfoHelper implements Initializable {
 
 
     //
-    KeyCombination kcSaveFile = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // TODO: add key shortcuts to save, delete, and close tabs
+    //KeyCombination kcSaveFile = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // TODO: add key shortcuts to save, delete, and close tabs
     // shortcuts
 
     //
@@ -114,6 +116,15 @@ public class ViewController extends InfoHelper implements Initializable {
         newTab.setContent(newTabTxt); // places the new text area inside of the previously created tab's content
         tabPane.getTabs().add(newTab); // places the new tab created with the text inside into the tabs list of the tabPane
 
+        menuBtnSave.setDisable(true);
+
+        newTabTxt.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+                handleShowRenderedTextAction(new ActionEvent());
+                menuBtnSave.setDisable(false);
+            }
+        });
     }
 
     public void handleSaveFileAction(ActionEvent actionEvent) {
@@ -175,15 +186,12 @@ public class ViewController extends InfoHelper implements Initializable {
         System.out.println("this doesn't do anything yet"); // TODO: have this do something or get rid of it.
     }
     public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
-        /*if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
+        if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-            System.out.println(tabContent);
-            webEngine.loadContent(markdownToHTML(tabContent));
-        }else{
+            webEngine.loadContent(model.parseTextForTags(markdownToHTML(tabContent))); // has to parse the html from markdown first, then split the tags
+        }else{                                                                                      // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
-        }*/
-        String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-        model.parseTextForTagsAndLineBreaks(tabContent);
+        }
         /*
         WebEngine htmlEngine = (((WebView) ((ScrollPane) tmp.getContent()).getContent()).getEngine()); // finds the webengine in the corresponding scrollpane/webview
         htmlEngine.loadContent("<b>biggie cheese</b>");
@@ -226,9 +234,7 @@ public class ViewController extends InfoHelper implements Initializable {
     public void handleOpenSparkServerAction(ActionEvent actionEvent) { get("/hello", (req, res) -> "Hello World"); }
     public void handleCloseSparkServerAction(ActionEvent actionEvent) { stop(); }
 
-
-
-//functions called past this point are not called as a direct result of interaction with the GUI//
+    //functions called past this point are not called as a direct result of interaction with the GUI//
 //-------------------------------------------------------------------------------------------------------------------//
     public Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
     public boolean bTabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
@@ -263,17 +269,27 @@ public class ViewController extends InfoHelper implements Initializable {
         newTabTxt.setText(content);
         newTab.setContent(newTabTxt);
         tabPane.getTabs().add(newTab);
+        menuBtnSave.setDisable(true);
+
+        newTabTxt.textProperty().addListener(new ChangeListener<String>() { // adds event listener to detect when a change has been made to the text
+            @Override                                                       // upon hearing a change, the new markdown text is rendered
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+                handleShowRenderedTextAction(new ActionEvent());
+                menuBtnSave.setDisable(false);
+            }
+        });
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         //can't find this setting in scenebuilder, TODO: add it to fxml file just before you finish this whole thing
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        wbvPreview.setFontScale(0.8);
+        wbvPreview.setFontScale(0.85);
         webEngine = wbvPreview.getEngine();
     }
 
 }
+
 
 
 

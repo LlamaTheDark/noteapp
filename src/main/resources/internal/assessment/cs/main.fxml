@@ -21,7 +21,7 @@
             <Menu mnemonicParsing="false" text="File">
                <items>
                   <MenuItem fx:id="menuBtnOpenFile" mnemonicParsing="false" onAction="#handleOpenFileAction" text="Open File" />
-                  <MenuItem fx:id="menuBtnSave" mnemonicParsing="false" onAction="#handleSaveFileAction" text="Save" />
+                  <MenuItem fx:id="menuBtnSave" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAction" text="Save" />
                   <MenuItem mnemonicParsing="false" onAction="#handleSaveFileAsAction" text="Save As..." />
                   <MenuItem fx:id="menuBtnSetNotesFolder" mnemonicParsing="false" onAction="#handleSetNotesFolderAction" text="Set Notes Folder" />
                   <MenuItem fx:id="menuBtnCreateNewNote" mnemonicParsing="false" onAction="#handleCreateNewNoteAction" text="Create New Note" />
@@ -55,12 +55,12 @@
          <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <TabPane fx:id="tabPane" layoutX="3.0" layoutY="-1.0" prefHeight="681.0" prefWidth="355.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="-53.0" AnchorPane.leftAnchor="3.0" AnchorPane.topAnchor="-1.0" />
+                  <TabPane fx:id="tabPane" layoutX="3.0" layoutY="-1.0" prefHeight="627.0" prefWidth="356.0" tabClosingPolicy="ALL_TABS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="401.0" prefWidth="382.0">
                <children>
-                  <WebView fx:id="wbvPreview" layoutY="30.0" prefHeight="568.0" prefWidth="356.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0" />
+                  <WebView fx:id="wbvPreview" layoutY="25.0" prefHeight="602.0" prefWidth="356.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
                </children>
             </AnchorPane>
          </items>
@@ -73,7 +73,7 @@
       <Text layoutX="14.0" layoutY="684.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add Tag:" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="14.0" />
       <TextField layoutX="66.0" layoutY="667.0" prefHeight="25.0" prefWidth="80.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="66.0" />
       <TextField editable="false" layoutX="152.0" layoutY="667.0" prefHeight="25.0" prefWidth="556.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="152.0" AnchorPane.rightAnchor="12.0" />
-      <Text layoutX="362.046875" layoutY="46.3681640625" strokeType="OUTSIDE" strokeWidth="0.0" text="Preview" textAlignment="RIGHT" wrappingWidth="348.109375" AnchorPane.rightAnchor="9.84375" AnchorPane.topAnchor="33.0">
+      <Text layoutX="360.875" layoutY="43.3681640625" strokeType="OUTSIDE" strokeWidth="0.0" text="Preview" textAlignment="RIGHT" wrappingWidth="348.109375" AnchorPane.rightAnchor="11.015625" AnchorPane.topAnchor="30.0">
          <font>
             <Font name="Consolas" size="18.0" />
          </font>

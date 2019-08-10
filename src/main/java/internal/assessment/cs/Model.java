@@ -95,7 +95,7 @@ public class Model {
     public String arrayToString(String[] arr) {
         String toString = "";
         for (String a: arr) {
-            toString+=a+" ";
+            toString+=a;
         }
         return toString;
     }
@@ -123,12 +123,23 @@ public class Model {
         return false;
     }
 
-    public String parseTextForTagsAndLineBreaks(String text){
-        String[] parsedText = text.split(" ");
-        System.out.println(arrayToString(parsedText));
+    public String parseTextForTags(String text){
+        String[] splitArr = text.split("((?<=#)|(?=#))");
+        String[] tmp;
 
+        //System.out.println(arrayToString(splitArr));
 
-        return arrayToString(parsedText);
+        for(int i = 0; i <= splitArr.length-3; i++){
+            if(splitArr[i].equals("#") && splitArr[i+2].equals("#")){
+                splitArr[i] = "<br><span style=\"background-color: #DCDCDC;font-family: Consolas,monaco,monospace;font-size: 12\">";
+                splitArr[i+2] = "</span><br>";
+            }
+        }
+
+        text = arrayToString(splitArr);
+        //text = text.replace("\n", "<br>");
+
+        return text;
     }
 
 }
