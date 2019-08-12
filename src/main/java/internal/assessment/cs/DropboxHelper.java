@@ -2,46 +2,49 @@ package internal.assessment.cs;
 
 import com.dropbox.core.*;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.FileMetadata;
-import com.dropbox.core.v2.files.UploadErrorException;
+import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.users.FullAccount;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.prefs.*;
 
 
-
-public class DropboxHelper extends InfoHelper{ //TODO: store the user information in a non-volatile place so the user can keep his/her account linked
+public class DropboxHelper extends InfoHelper { //TODO: store the user information in a non-volatile place so the user can keep his/her account linked
     private final String APP_KEY = "xg3bskf1jlnkl4b";
     private final String APP_SECRET = "nslf7h2cxzsykkk";
     private DbxWebAuth webAuth;
     private String accessToken = getDbxAccessToken(); // gets whatever token is already there (or simply "" if no account is linked yet)
     private DbxRequestConfig config = new DbxRequestConfig("csiaNotes");
-    private DbxClientV2 client = new DbxClientV2(config ,accessToken);
+    private DbxClientV2 client = new DbxClientV2(config, accessToken);
+    ViewController progressControl;
 
     // constructor
-    public DropboxHelper(){
+    public DropboxHelper() {
         DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
         webAuth = new DbxWebAuth(config, appInfo);
+    }
+    public DropboxHelper(ViewController progressControl){
+        DbxAppInfo appInfo = new DbxAppInfo(APP_KEY, APP_SECRET);
+        webAuth = new DbxWebAuth(config, appInfo);
+
+        this.progressControl = progressControl;
     }
     // constructor
 
     public boolean accountHasBeenLinked() {
-        return accessToken!=null&&!accessToken.equals("");
+        return accessToken != null && !accessToken.equals("");
     }
 
-    public String getAuthUrl(){
+    public String getAuthUrl() {
         DbxWebAuth.Request webAuthRequest = DbxWebAuth.newRequestBuilder()
                 .withNoRedirect()
                 .withForceReapprove(Boolean.FALSE)
                 .build();
-        return  webAuth.authorize(webAuthRequest);
+        return webAuth.authorize(webAuthRequest);
     }
-    public String getClientName(){
+
+    public String getClientName() {
         FullAccount account = null;
         try {
             account = client.users().getCurrentAccount();
@@ -51,7 +54,7 @@ public class DropboxHelper extends InfoHelper{ //TODO: store the user informatio
         return account.getName().getDisplayName();
     }
 
-    public String[] finishAuthorization(String code){ // finishes the authorization and returns information about the event
+    public String[] finishAuthorization(String code) { // finishes the authorization and returns information about the event
         DbxAuthFinish authFinish;
         try {
             authFinish = webAuth.finishFromCode(code);
@@ -59,6 +62,7 @@ public class DropboxHelper extends InfoHelper{ //TODO: store the user informatio
             client = new DbxClientV2(config, accessToken);
             setDbxAccessToken(accessToken);
             setTmpInfo("successful authorization");
+            createFolder();
             return new String[]{getClientName(), authFinish.getUserId(), authFinish.getAccessToken()};
         } catch (DbxException ex) {
             setTmpInfo("oof");
@@ -67,29 +71,62 @@ public class DropboxHelper extends InfoHelper{ //TODO: store the user informatio
         return new String[3];
     }
 
-    public boolean uploadFile(){ // returns whether or not the sync was successful
-        File dir = new File(getNoteFolderPath());
-        for (File f : Objects.requireNonNull(dir.listFiles())) {
+    public void uploadFiles() { // returns whether or not the sync was successful
+        createFolder(); // if the folder has not already been created, it will create the folder;
 
-            try (InputStream in = new FileInputStream(getNoteFolderPath() + "\\Yeetballs.txt")) {
-                FileMetadata metadata = client.files().uploadBuilder("/noteStorage/yeetballs.txt")
-                        .uploadAndFinish(in);
-            } catch (IOException | DbxException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        return true;
+        SyncTask sync = new SyncTask(client);
+
+        progressControl.rebindProgressBar(sync.progressProperty()); // binds the progress bar to the completion state of the task
+        progressControl.rebindSyncLabel(sync.messageProperty());
+        progressControl.startLoadingAnimation();
+
+        sync.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, //
+                new EventHandler<WorkerStateEvent>(){
+
+                    @Override
+                    public void handle(WorkerStateEvent event) {
+                        progressControl.unBindProgressBar();
+                        progressControl.resetProgressBar();
+                        progressControl.stopLoadingAnimation();
+                        progressControl.hideProgressBar();
+                    }
+                });
+
+        new Thread(sync).start();
+
     }
+
+    public void uploadFile(File f) {
+        try (InputStream in = new FileInputStream(f.getAbsolutePath())) {
+            FileMetadata metadata = client.files().uploadBuilder("/myNotesFolder/" + f.getName())
+                    .uploadAndFinish(in);
+        } catch (IOException | DbxException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public boolean createFolder(){
         try {
-            client.files().createFolderV2("/noteStorage");
-            return true;
-        } catch (DbxException e) {
-            e.printStackTrace();
-            return false;
+            CreateFolderResult folder = client.files().createFolderV2("/myNotesFolder");
+            //System.out.println(folder.getMetadata().getName());
+        } catch (CreateFolderErrorException err) {
+            if (err.errorValue.isPath() && err.errorValue.getPathValue().isConflict()) {
+                //err.printStackTrace();
+                return false;
+                //System.out.println("Something already exists at the path.");
+            } else {
+                err.printStackTrace();
+                //System.out.print("Some other CreateFolderErrorException occurred...");
+                //System.out.print(err.toString());
+                return false;
+            }
+        } catch (Exception err) {
+            err.printStackTrace();
+            //System.out.print("Some other Exception occurred...");
+            //System.out.print(err.toString());
         }
+        return true;
     }
 }
 

@@ -1,7 +1,9 @@
 package internal.assessment.cs;
 
+import org.json.simple.JSONObject;
+
 public class InfoHelper{
-    private String infoFilePath = "C:\\NoteAppData\\info.txt";
+    private String infoFilePath = "C:\\NoteAppData\\info.json";
     private FileHelper fh = new FileHelper(infoFilePath);
 
     private static String tmpInfo;
@@ -11,29 +13,28 @@ public class InfoHelper{
     public String getInfoFilePath(){return infoFilePath;}
 
     public void setNoteFolderPath(String noteFolderPath){
-        if(fh.readFile().length > 1) {
+        JSONObject tmp = fh.readToJSONObj();
+        tmp.put("noteFolderPath", noteFolderPath);
+        fh.writeToFile(tmp.toJSONString());
+
+        /*if(fh.readFile().length > 1) {
             fh.writeToFile(noteFolderPath + "\n" + fh.readFile()[1]);
         }else{
             fh.writeToFile(noteFolderPath + "\n");
-        }
+        }*/
     }
     public String getNoteFolderPath() {
-        return fh.readFile()[0]; // the 0th index is the value of the path
+        return (String)fh.readToJSONObj().get("noteFolderPath");
     }
 
     public String getDbxAccessToken(){
-        FileHelper infoHelp = new FileHelper(infoFilePath);
-        if(infoHelp.readFile().length > 1){
-            return infoHelp.readFile()[1];
-        }else{
-            return "";
-        }
+        return (String)fh.readToJSONObj().get("accessToken");
     }
-    public void setDbxAccessToken(String dbxAccessKey){
-        fh.writeToFile(fh.readFile()[0] + "\n" + dbxAccessKey);
+    public void setDbxAccessToken(String dbxAccessToken){
+        JSONObject tmp = fh.readToJSONObj();
+        tmp.put("accessToken", dbxAccessToken);
+        fh.writeToFile(tmp.toJSONString());
     }
-
-
 }
 
 

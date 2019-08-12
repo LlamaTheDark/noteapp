@@ -1,11 +1,15 @@
 package internal.assessment.cs;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -33,6 +37,7 @@ import static spark.Spark.*;
 
 public class ViewController extends InfoHelper implements Initializable {
 
+
     Model model = new Model();
 
     //under sync
@@ -47,8 +52,12 @@ public class ViewController extends InfoHelper implements Initializable {
     //under file
     public MenuItem menuBtnCreateNewNote;
     public MenuItem menuBtnSave;
+    public MenuItem menuBtnSaveAs;
     public MenuItem menuBtnOpenFile;
     public MenuItem menuBtnSetNotesFolder;
+    //----------------------------------//
+    public MenuItem menuBtnExit;
+    //
 
     public Button btnSearch;
 
@@ -56,8 +65,14 @@ public class ViewController extends InfoHelper implements Initializable {
     public TabPane tabPane;
     public WebView wbvPreview;
 
+    //
+    public ProgressBar pbSyncProgress;
+    public ImageView imgLoading;
+    public Label lblSyncUpdate;
+    // sync bar
 
     //
+
     //KeyCombination kcSaveFile = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // TODO: add key shortcuts to save, delete, and close tabs
     // shortcuts
 
@@ -77,7 +92,7 @@ public class ViewController extends InfoHelper implements Initializable {
     // for saving and opening files (the window helper from the OS) // TODO: eventually sync the files from the notes folder
 
     //
-    DropboxHelper dh = new DropboxHelper();
+    DropboxHelper dh = new DropboxHelper(this);
     // for dropbox
 
     //constructor//
@@ -94,6 +109,7 @@ public class ViewController extends InfoHelper implements Initializable {
         options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), StrikethroughExtension.create()));
         parser = Parser.builder(options).build();
         renderer = HtmlRenderer.builder(options).build();
+
     }
     //constructor//
 
@@ -116,30 +132,29 @@ public class ViewController extends InfoHelper implements Initializable {
         newTab.setContent(newTabTxt); // places the new text area inside of the previously created tab's content
         tabPane.getTabs().add(newTab); // places the new tab created with the text inside into the tabs list of the tabPane
 
-        menuBtnSave.setDisable(true);
+        tabPane.getSelectionModel().select(newTab);
+
+        menuBtnSave.setDisable(false);
+        menuBtnSaveAs.setDisable(false);
 
         newTabTxt.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
                 handleShowRenderedTextAction(new ActionEvent());
-                menuBtnSave.setDisable(false);
             }
         });
     }
 
     public void handleSaveFileAction(ActionEvent actionEvent) {
         Tab tmp = getCurrentTab();
-        if(new File(getNoteFolderPath() + "\\" + tmp.getText()).exists()) {
+        if(new File(getNoteFolderPath() + "\\" + tmp.getText()).exists()) { // if a file already exists then overwrite it
             FileHelper fh = new FileHelper(getNoteFolderPath() + "\\" + tmp.getText());
             fh.writeToFile(((TextArea) tmp.getContent()).getText());
         }else{
-            handleSaveFileAsAction(new ActionEvent());
+            handleSaveFileAsAction(new ActionEvent()); // if the file doesn't exist then go to 'save as...'
         }
     }
     public void handleSaveFileAsAction(ActionEvent actionEvent){
-
-        System.out.println(getNoteFolderPath());
-
         Tab tmp = getCurrentTab();
         selectedFile = openFileChooser("Save as...", "save", tmp.getText()); // saves lines of code to use seperate method
         if (selectedFile != null){
@@ -160,7 +175,7 @@ public class ViewController extends InfoHelper implements Initializable {
         }
     }
     public void handleDeleteFileAction(ActionEvent actionEvent) {
-        if (!bTabPaneIsEmpty()){
+        if (!tabPaneIsEmpty()){
             System.out.println(getNoteFolderPath() + "\\" + getCurrentTab().getText());
             Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
             confirmDelete.setHeaderText("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?");
@@ -183,7 +198,7 @@ public class ViewController extends InfoHelper implements Initializable {
     }
 
     public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
-        if(!bTabPaneIsEmpty()) { // ensures there is a tab to render...
+        if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
             webEngine.loadContent(markdownToHTML(tabContent)); // has to parse the html from markdown first, then split the tags
         }else{                                                                                      // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
@@ -230,7 +245,12 @@ public class ViewController extends InfoHelper implements Initializable {
         }
     }
     public void handleSyncFilesAction(ActionEvent actionEvent) {
-        dh.createFolder();
+        pbSyncProgress.setVisible(true);
+        dh.uploadFiles();
+    }
+
+    public void handleExitApplicationAction(ActionEvent actionEvent) {
+        ((Stage)btnSearch.getScene().getWindow()).close();
     }
 
     public void handleOpenSparkServerAction(ActionEvent actionEvent) { get("/hello", (req, res) -> "Hello World"); }
@@ -239,7 +259,7 @@ public class ViewController extends InfoHelper implements Initializable {
     //functions called past this point are not called as a direct result of interaction with the GUI//
 //-------------------------------------------------------------------------------------------------------------------//
     public Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
-    public boolean bTabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
+    public boolean tabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
 
     public File openFileChooser(String title, String type, String initialFileName){
         fc.setTitle(title);
@@ -270,18 +290,45 @@ public class ViewController extends InfoHelper implements Initializable {
         newTabTxt.setText(content);
         newTab.setContent(newTabTxt);
         tabPane.getTabs().add(newTab);
-        menuBtnSave.setDisable(true);
 
-        handleShowRenderedTextAction(new ActionEvent());
+        tabPane.getSelectionModel().select(newTab); // select the new tab
+
+        menuBtnSave.setDisable(false);
+        menuBtnSaveAs.setDisable(false);
+
 
         newTabTxt.textProperty().addListener(new ChangeListener<String>() { // adds event listener to detect when a change has been made to the text
             @Override                                                       // upon hearing a change, the new markdown text is rendered
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
                 handleShowRenderedTextAction(new ActionEvent());
-                menuBtnSave.setDisable(false);
             }
         });
     }
+
+    public void closeTab() {
+        tabPane.getTabs().remove(tabPane.getSelectionModel().getSelectedItem());
+        if(tabPaneIsEmpty()){
+            menuBtnSave.setDisable(true);
+            menuBtnSaveAs.setDisable(true);
+        }
+    }
+
+//
+    void rebindProgressBar(ReadOnlyDoubleProperty syncProgress){
+        pbSyncProgress.progressProperty().unbind();
+        pbSyncProgress.progressProperty().bind(syncProgress);
+    }
+    void rebindSyncLabel(ReadOnlyStringProperty syncLabel){
+        lblSyncUpdate.textProperty().unbind();
+        lblSyncUpdate.textProperty().bind(syncLabel);
+    }
+    void unBindProgressBar(){ pbSyncProgress.progressProperty().unbind(); }
+    void resetProgressBar(){ pbSyncProgress.setProgress(0.0); }
+    void startLoadingAnimation(){ imgLoading.setImage(new Image("/loading.gif")); }
+    void stopLoadingAnimation(){ imgLoading.setImage(null); }
+    void hideProgressBar(){ pbSyncProgress.setVisible(false); }
+// progress bar action
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -289,15 +336,28 @@ public class ViewController extends InfoHelper implements Initializable {
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
         wbvPreview.setFontScale(0.85);
         webEngine = wbvPreview.getEngine();
-
         if (dh.accountHasBeenLinked()){
             menuBtnSyncFiles.setDisable(false);
         }
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener( // change listener to detect a tab selection change
+                new ChangeListener<Tab>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+                        if(tabPaneIsEmpty()){
+                            menuBtnSave.setDisable(true);
+                            menuBtnSaveAs.setDisable(true);
+                            webEngine.loadContent("");
+                        }else{
+                            handleShowRenderedTextAction(new ActionEvent());
+                        }
+                    }
+                }
+        );
     }
+
+
 }
-
-
-
 
 /*
 TODO: start server: get("/hello", (req, res) -> "Hello World");

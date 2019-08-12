@@ -11,7 +11,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class FolderPathController extends ViewController implements Initializable { // inheritance to access the note folder path
+public class FolderPathController extends InfoHelper implements Initializable { // inheritance to access the note folder path
 
     public TextField txtFldPath;
     public Button btnFindFolder;

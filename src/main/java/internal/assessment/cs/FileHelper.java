@@ -1,11 +1,16 @@
 package internal.assessment.cs;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 
 
 public class FileHelper{
 
     Model model = new Model();
+    JSONParser parser = new JSONParser();
 
     final String WITH_DELIMITERS = "\\t|,|;|!|-|:|@|_|\\*|/";
 
@@ -34,6 +39,14 @@ public class FileHelper{
         catch (FileNotFoundException a){System.out.println("Could not find file " + "\'FILENAME\'");} // catches potential errors
         catch (IOException e){System.out.println("Error reading file"  + "\'FILENAME\'");}
         return model.shortenStringArrToIndex(fileRead, count); // returns the final output of the read string in array form
+    }
+    public JSONObject readToJSONObj(){
+        try {
+            return (JSONObject) parser.parse(model.arrayToString(readFile()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new JSONObject();
     }
 
     public void writeToFile(String fileContent){ // will replace the specified file's content with the String passed
@@ -78,7 +91,10 @@ public class FileHelper{
                 int keyPhraseCount = 0;
                 int tmpCount = j;
 
-                while (keyPhraseCount <= splitText[i].length - 1 && keyPhraseCount <= splitKeyphrase.length - 1 && tmpCount <= splitText[i].length - 1 && isMatch) {
+                while (keyPhraseCount <= splitText[i].length - 1
+                        && keyPhraseCount <= splitKeyphrase.length - 1
+                        && tmpCount <= splitText[i].length - 1
+                        && isMatch) {
                     if (!splitKeyphrase[keyPhraseCount].equals(splitText[i][tmpCount])) {
                         isMatch = false;
                     } else {
@@ -88,7 +104,12 @@ public class FileHelper{
                 }
                 if (keyPhraseCount == splitKeyphrase.length && keyPhraseCount != 0) {
                     //System.out.println(Model.getSurroundingText(splitText[i], j, j + splitKeyphrase.length - 1));
-                    ml.addNode(ml.newNode(Model.getSurroundingText(splitText[i], j, j + splitKeyphrase.length - 1), i + 1));
+                    ml.addNode(ml.newNode(
+                            Model.getSurroundingText(
+                                    splitText[i],
+                                    j,
+                                    j + splitKeyphrase.length - 1),
+                            i + 1));
                 }
             }
         }

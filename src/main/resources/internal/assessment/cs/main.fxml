@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
@@ -22,9 +25,11 @@
                <items>
                   <MenuItem fx:id="menuBtnOpenFile" mnemonicParsing="false" onAction="#handleOpenFileAction" text="Open File" />
                   <MenuItem fx:id="menuBtnSave" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAction" text="Save" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleSaveFileAsAction" text="Save As..." />
+                  <MenuItem fx:id="menuBtnSaveAs" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAsAction" text="Save As..." />
                   <MenuItem fx:id="menuBtnSetNotesFolder" mnemonicParsing="false" onAction="#handleSetNotesFolderAction" text="Set Notes Folder" />
                   <MenuItem fx:id="menuBtnCreateNewNote" mnemonicParsing="false" onAction="#handleCreateNewNoteAction" text="Create New Note" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="menuBtnExit" mnemonicParsing="false" onAction="#handleExitApplicationAction" text="Exit" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
@@ -79,5 +84,8 @@
             <Font name="Consolas" size="18.0" />
          </font>
       </Text>
+      <ProgressBar fx:id="pbSyncProgress" layoutX="176.0" layoutY="10.0" prefHeight="9.0" prefWidth="160.0" progress="0.0" visible="false" />
+      <ImageView fx:id="imgLoading" fitHeight="17.0" fitWidth="22.0" layoutX="338.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="lblSyncUpdate" layoutX="361.0" layoutY="4.0" />
    </children>
 </AnchorPane>
