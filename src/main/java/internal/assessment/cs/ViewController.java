@@ -38,6 +38,7 @@ import static spark.Spark.*;
 public class ViewController extends InfoHelper implements Initializable {
 
 
+    public MenuItem menuBtnFindFile;
     Model model = new Model();
 
     //under sync
@@ -174,6 +175,9 @@ public class ViewController extends InfoHelper implements Initializable {
             System.out.println("This is not a valid file name");
         }
     }
+    public void handFindFileAction(ActionEvent actionEvent) {
+
+    }
     public void handleDeleteFileAction(ActionEvent actionEvent) {
         if (!tabPaneIsEmpty()){
             System.out.println(getNoteFolderPath() + "\\" + getCurrentTab().getText());
@@ -244,7 +248,7 @@ public class ViewController extends InfoHelper implements Initializable {
             Model.showInformationMsg("An account has already been linked.", "Account Name: " + dh.getClientName());
         }
     }
-    public void handleSyncFilesAction(ActionEvent actionEvent) {
+    public void handleSyncFilesToDropboxAction(ActionEvent actionEvent) {
         pbSyncProgress.setVisible(true);
         dh.uploadFiles();
     }
@@ -328,7 +332,13 @@ public class ViewController extends InfoHelper implements Initializable {
     void stopLoadingAnimation(){ imgLoading.setImage(null); }
     void hideProgressBar(){ pbSyncProgress.setVisible(false); }
 // progress bar action
+    void syncDropboxToLocal(){
+        pbSyncProgress.setVisible(true);
+        dh.downloadFiles();
+    }
 
+    //TODO: implement find file (to add to notes)
+    //TODO: save dropbox to local folder upon startup
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -354,8 +364,10 @@ public class ViewController extends InfoHelper implements Initializable {
                     }
                 }
         );
-    }
 
+        syncDropboxToLocal();
+
+    }
 
 }
 

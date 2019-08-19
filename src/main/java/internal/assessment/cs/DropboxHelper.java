@@ -74,7 +74,7 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
     public void uploadFiles() { // returns whether or not the sync was successful
         createFolder(); // if the folder has not already been created, it will create the folder;
 
-        SyncTask sync = new SyncTask(client);
+        UploadTask sync = new UploadTask(client);
 
         progressControl.rebindProgressBar(sync.progressProperty()); // binds the progress bar to the completion state of the task
         progressControl.rebindSyncLabel(sync.messageProperty());
@@ -94,6 +94,28 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
 
         new Thread(sync).start();
 
+    }
+
+    public void downloadFiles(){
+        DownloadTask sync = new DownloadTask(client);
+
+        progressControl.rebindProgressBar(sync.progressProperty()); // binds the progress bar to the completion state of the task
+        progressControl.rebindSyncLabel(sync.messageProperty());
+        progressControl.startLoadingAnimation();
+
+        sync.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, //
+                new EventHandler<WorkerStateEvent>(){
+
+                    @Override
+                    public void handle(WorkerStateEvent event) {
+                        progressControl.unBindProgressBar();
+                        progressControl.resetProgressBar();
+                        progressControl.stopLoadingAnimation();
+                        progressControl.hideProgressBar();
+                    }
+                });
+
+        new Thread(sync).start();
     }
 
     public void uploadFile(File f) {

@@ -12,12 +12,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
-public class SyncTask extends Task {
+public class UploadTask extends Task {
 
     private InfoHelper ih = new InfoHelper();
     private DbxClientV2 client;
 
-    public SyncTask(DbxClientV2 client){
+    public UploadTask(DbxClientV2 client){
         this.client = client;
     }
 
@@ -36,7 +36,6 @@ public class SyncTask extends Task {
         // test to see if a file that is in dropbox is found locally. {
         //      if it's not, delete it from dropbox. (only do this if you are updating the local library with dropbox upon launching the application)
         // }
-
 
         // first deletes all files not existing locally.
         boolean existsLocally;
