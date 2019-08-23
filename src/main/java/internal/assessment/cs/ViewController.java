@@ -60,6 +60,10 @@ public class ViewController extends InfoHelper implements Initializable {
     public MenuItem menuBtnExit;
     //
 
+    //under Help
+    public MenuItem btnAbout;
+    //
+
     public Button btnSearch;
 
     public MenuBar menu;
@@ -71,11 +75,6 @@ public class ViewController extends InfoHelper implements Initializable {
     public ImageView imgLoading;
     public Label lblSyncUpdate;
     // sync bar
-
-    //
-
-    //KeyCombination kcSaveFile = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN); // TODO: add key shortcuts to save, delete, and close tabs
-    // shortcuts
 
     //
     MutableDataSet options;
@@ -100,6 +99,7 @@ public class ViewController extends InfoHelper implements Initializable {
     public ViewController(){ // constructor to set defaults for fileChooser and the noteFolder location
         fc = new FileChooser();
         fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("all documents", "*.*"),
                 new FileChooser.ExtensionFilter("text documents", "*.txt"),
                 new FileChooser.ExtensionFilter("markdown documents", "*.md"),
                 new FileChooser.ExtensionFilter("html documents", "*.html")
@@ -170,8 +170,8 @@ public class ViewController extends InfoHelper implements Initializable {
         selectedFile = openFileChooser("Open...", "open", ""); // shows the open dialogue and sets selectedFile to whatever file is selected
         if (selectedFile != null){
             FileHelper fh = new FileHelper(selectedFile.getPath());
-            createNewNote(model.stringArrToString(fh.readFile()), selectedFile.getName()); // going to have to change all 'readFile' bits
-        }else{
+            createNewNote(model.stringArrToString(fh.readFileToArr()), selectedFile.getName()); // going to have to change all 'readFileToArr' bits
+        }else{                                                                                  // TODO: eliminate the redundancy of the stringArrToString
             System.out.println("This is not a valid file name");
         }
     }
@@ -181,23 +181,19 @@ public class ViewController extends InfoHelper implements Initializable {
     public void handleDeleteFileAction(ActionEvent actionEvent) {
         if (!tabPaneIsEmpty()){
             System.out.println(getNoteFolderPath() + "\\" + getCurrentTab().getText());
-            Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION); // TODO: make a Model function to make a CONFIRMATION message
             confirmDelete.setHeaderText("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?");
             confirmDelete.setContentText("Press \'OK\' to confirm.");
             if (confirmDelete.showAndWait().get() == ButtonType.OK) {
-                File tmp = new File(getNoteFolderPath() + "\\" + getCurrentTab().getText());
-                if(tmp.delete()){
-                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                    successAlert.setHeaderText("Success");
-                    successAlert.setContentText(getCurrentTab().getText() + " successfully deleted from directory path.");
-                    successAlert.showAndWait();
+                if((new FileHelper(getNoteFolderPath() + "\\" + getCurrentTab().getText())).deleteFile()){
+                    Model.showInformationMsg("Success", getCurrentTab().getText() + " successfully deleted from directory path.");
                     tabPane.getTabs().remove(getCurrentTab());
                 }else{
-                    model.showErrorMsg("An unknown error occurred.", "Please try again.");
+                    Model.showErrorMsg("An unknown error occurred.", "Please try again.");
                 }
             }
         }else{
-            model.showErrorMsg("No File to Delete", "Open a file to delete it.");
+            Model.showErrorMsg("No File to Delete", "Open a file to delete it.");
         }
     }
 
@@ -223,7 +219,7 @@ public class ViewController extends InfoHelper implements Initializable {
             searchStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("searchScene.fxml")), 420, 465));
             searchStage.showAndWait();
             if(!getTmpInfo().equals("")){
-                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"\\"+ getTmpInfo())).readFile()), getTmpInfo());
+                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"\\"+ getTmpInfo())).readFileToArr()), getTmpInfo());
             }
         }catch(IOException e){
             e.printStackTrace();
@@ -257,11 +253,23 @@ public class ViewController extends InfoHelper implements Initializable {
         ((Stage)btnSearch.getScene().getWindow()).close();
     }
 
-    public void handleOpenSparkServerAction(ActionEvent actionEvent) { get("/hello", (req, res) -> "Hello World"); }
+    public void handleOpenSparkServerAction(ActionEvent actionEvent) {
+        FileHelper fh = new FileHelper(getNoteFolderPath() + "\\index.html");
+        get("/csianoteapp", (req, res) -> fh.readFileToStr());
+    }
     public void handleCloseSparkServerAction(ActionEvent actionEvent) { stop(); }
 
+    public void handleShowAboutInfoAction(ActionEvent actionEvent) {
+        createNewNote((new FileHelper(getInfoFolderPath()+"\\README.txt").readFileToStr()), "README.txt");
+    }
     //functions called past this point are not called as a direct result of interaction with the GUI//
+
+
 //-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+
+
     public Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
     public boolean tabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
 
@@ -299,7 +307,6 @@ public class ViewController extends InfoHelper implements Initializable {
 
         menuBtnSave.setDisable(false);
         menuBtnSaveAs.setDisable(false);
-
 
         newTabTxt.textProperty().addListener(new ChangeListener<String>() { // adds event listener to detect when a change has been made to the text
             @Override                                                       // upon hearing a change, the new markdown text is rendered
@@ -365,10 +372,9 @@ public class ViewController extends InfoHelper implements Initializable {
                 }
         );
 
-        syncDropboxToLocal();
+        //syncDropboxToLocal();
 
     }
-
 }
 
 /*

@@ -25,23 +25,25 @@
                <items>
                   <MenuItem fx:id="menuBtnFindFile" mnemonicParsing="false" onAction="#handFindFileAction" text="Add File..." />
                   <MenuItem fx:id="menuBtnOpenFile" mnemonicParsing="false" onAction="#handleOpenFileAction" text="Open File" />
+                  <MenuItem fx:id="menuBtnCreateNewNote" mnemonicParsing="false" onAction="#handleCreateNewNoteAction" text="Create New Note" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnSave" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAction" text="Save" />
                   <MenuItem fx:id="menuBtnSaveAs" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAsAction" text="Save As..." />
+                  <MenuItem fx:id="menuBtnDeleteFile" mnemonicParsing="false" onAction="#handleDeleteFileAction" text="Delete" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnSetNotesFolder" mnemonicParsing="false" onAction="#handleSetNotesFolderAction" text="Set Notes Folder" />
-                  <MenuItem fx:id="menuBtnCreateNewNote" mnemonicParsing="false" onAction="#handleCreateNewNoteAction" text="Create New Note" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnExit" mnemonicParsing="false" onAction="#handleExitApplicationAction" text="Exit" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Edit">
                <items>
-                  <MenuItem fx:id="menuBtnDeleteFile" mnemonicParsing="false" text="Delete" />
                   <MenuItem fx:id="menuBtnRender" mnemonicParsing="false" onAction="#handleShowRenderedTextAction" text="Render Markdown" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                <items>
-                  <MenuItem mnemonicParsing="false" text="About" />
+                  <MenuItem fx:id="btnAbout" mnemonicParsing="false" onAction="#handleShowAboutInfoAction" text="About" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Sync">
@@ -79,7 +81,7 @@
       </Button>
       <Text layoutX="14.0" layoutY="684.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add Tag:" AnchorPane.bottomAnchor="13.0" AnchorPane.leftAnchor="14.0" />
       <TextField layoutX="66.0" layoutY="667.0" prefHeight="25.0" prefWidth="80.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="66.0" />
-      <TextField editable="false" layoutX="152.0" layoutY="667.0" prefHeight="25.0" prefWidth="556.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="152.0" AnchorPane.rightAnchor="12.0" />
+      <TextField editable="false" layoutX="152.0" layoutY="667.0" prefHeight="25.0" prefWidth="478.0" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="152.0" AnchorPane.rightAnchor="90.0" />
       <Text layoutX="360.875" layoutY="43.3681640625" strokeType="OUTSIDE" strokeWidth="0.0" text="Preview" textAlignment="RIGHT" wrappingWidth="348.109375" AnchorPane.rightAnchor="11.015625" AnchorPane.topAnchor="30.0">
          <font>
             <Font name="Consolas" size="18.0" />
@@ -88,5 +90,15 @@
       <ProgressBar fx:id="pbSyncProgress" layoutX="176.0" layoutY="10.0" prefHeight="9.0" prefWidth="160.0" progress="0.0" visible="false" />
       <ImageView fx:id="imgLoading" fitHeight="17.0" fitWidth="22.0" layoutX="338.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
       <Label fx:id="lblSyncUpdate" layoutX="361.0" layoutY="4.0" />
+      <Button layoutX="635.0" layoutY="667.0" mnemonicParsing="false" onAction="#handleOpenSparkServerAction" prefHeight="25.0" prefWidth="33.0" text="start" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="52.0">
+         <font>
+            <Font size="9.0" />
+         </font>
+      </Button>
+      <Button layoutX="676.0" layoutY="667.0" mnemonicParsing="false" onAction="#handleCloseSparkServerAction" prefHeight="25.0" prefWidth="33.0" text="stop" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0">
+         <font>
+            <Font size="9.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

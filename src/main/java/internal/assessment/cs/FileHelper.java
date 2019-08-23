@@ -22,8 +22,8 @@ public class FileHelper{
         FILEPATH = filePath; // File name is instantiated specific to each object
     }
 
-    public String[] readFile(){ // will return a single string file read from a document with each line separation shown through '\n'
-        String[] fileRead = new String[500]; // fileRead file is the string containing the read file to be returned by the readFile() method.
+    public String[] readFileToArr(){ // will return a single string file read from a document with each line separation shown through '\n'
+        String[] fileRead = new String[500]; // fileRead file is the string containing the read file to be returned by the readFileToArr() method.
         int count = 0;
         String line;   // will be set equal to each line to append to fileRead and test for the end of the document
         try{
@@ -40,13 +40,35 @@ public class FileHelper{
         catch (IOException e){System.out.println("Error reading file"  + "\'FILENAME\'");}
         return model.shortenStringArrToIndex(fileRead, count); // returns the final output of the read string in array form
     }
+    public String readFileToStr(){
+        String fileRead = ""; // fileRead file is the string containing the read file to be returned by the readFileToArr() method.
+        int count = 0;
+        String line;   // will be set equal to each line to append to fileRead and test for the end of the document
+        try{
+            FileReader fileReader = new FileReader(FILEPATH); // creates FileReader object used to read the file
+            BufferedReader bufferedReader = new BufferedReader(fileReader); // creates BufferedReader object used to read
+            // the lines of the file specified in fileReader
+            while ((line = bufferedReader.readLine()) != null){ // makes sure the end of the document has not been reached
+                fileRead += line+"\n"; // appends the current line (and a new line: '\n')
+                count++;
+            }
+            bufferedReader.close(); // closes the bufferedReader
+        }
+        catch (FileNotFoundException a){System.out.println("Could not find file " + "\'FILENAME\'");} // catches potential errors
+        catch (IOException e){System.out.println("Error reading file"  + "\'FILENAME\'");}
+        return fileRead;
+    }
     public JSONObject readToJSONObj(){
         try {
-            return (JSONObject) parser.parse(model.arrayToString(readFile()));
+            return (JSONObject) parser.parse(model.arrayToString(readFileToArr()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return new JSONObject();
+    }
+
+    public boolean deleteFile(){
+        return ((new File(FILEPATH)).delete());
     }
 
     public void writeToFile(String fileContent){ // will replace the specified file's content with the String passed
@@ -74,7 +96,7 @@ public class FileHelper{
         MatchList ml = new MatchList(new File(FILEPATH).getName());
 
         boolean isMatch;
-        String[] text = readFile();
+        String[] text = readFileToArr();
         int[] limits = Model.getTagLimits(tag, text); // limits[0] = start, [1] = end
         String[][] splitText = new String[text.length][0];
         for (int i = 0; i < text.length; i++) {
@@ -95,7 +117,7 @@ public class FileHelper{
                         && keyPhraseCount <= splitKeyphrase.length - 1
                         && tmpCount <= splitText[i].length - 1
                         && isMatch) {
-                    if (!splitKeyphrase[keyPhraseCount].equals(splitText[i][tmpCount])) {
+                    if (!splitKeyphrase[keyPhraseCount].toLowerCase().equals(splitText[i][tmpCount].toLowerCase())) {
                         isMatch = false;
                     } else {
                         keyPhraseCount++;
