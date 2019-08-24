@@ -3,14 +3,14 @@ package internal.assessment.cs;
 import org.json.simple.JSONObject;
 
 public class InfoHelper{
-    private String infoFolderPath = "C:\\NoteAppData";
-    private FileHelper fh = new FileHelper(infoFolderPath + "\\info.json");
+    private String dataFolderPath = "C:\\NoteAppData";
+    private FileHelper fh = new FileHelper(dataFolderPath + "\\info.json");
 
     private static String tmpInfo;
     public static String getTmpInfo() { return tmpInfo; }
     public static void setTmpInfo(String newTmpFileName) { tmpInfo = newTmpFileName; }
 
-    public String getInfoFolderPath(){return infoFolderPath;}
+    public String getDataFolderPath(){return dataFolderPath;}
 
     public void setNoteFolderPath(String noteFolderPath){
         JSONObject tmp = fh.readToJSONObj();

@@ -10,6 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,6 +29,8 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.options.MutableDataSet;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 // markdown imports
 
 import javax.net.ssl.SSLException;
@@ -41,7 +44,8 @@ import static spark.Spark.*;
 
 public class ViewController extends InfoHelper implements Initializable {
 
-    public String scriptTags = "" + // adds mathJax to render sequence
+    public String scriptTags(){
+        return "" + // adds mathJax to render sequence
             "<script type=\"text/x-mathjax-config\">\n" +
             "  MathJax.Hub.Config({\n" +
             "    tex2jax: {\n" +
@@ -50,7 +54,8 @@ public class ViewController extends InfoHelper implements Initializable {
             "    }\n" +
             "  });\n" +
             "</script>\n" +
-            "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n";
+            "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n" +
+                "";} // only made it a function so that I could collapse it... :/
 
     public MenuItem menuBtnFindFile;
     Model model = new Model();
@@ -71,6 +76,9 @@ public class ViewController extends InfoHelper implements Initializable {
     public MenuItem menuBtnOpenFile;
     public MenuItem menuBtnSetNotesFolder;
     //----------------------------------//
+    public MenuItem menuBtnNewTemplateNote;
+    public MenuItem menuBtnNewTemplate;
+    //----------------------------------//
     public MenuItem menuBtnExit;
     //
 
@@ -80,7 +88,6 @@ public class ViewController extends InfoHelper implements Initializable {
     public CheckMenuItem menuBtnBoolRenderMd;
     public CheckMenuItem menuBtnBoolPauseRender;
     //
-
     enum RenderType {
         NONE,
         TEXT,
@@ -89,8 +96,9 @@ public class ViewController extends InfoHelper implements Initializable {
         BOTH,
         PAUSED
     }
-    RenderType renderType = RenderType.MARKDOWN;
-    RenderType unPausedRender;
+    private RenderType renderType = RenderType.MARKDOWN;
+    private RenderType unPausedRender;
+    //
 
     //under help
     public MenuItem btnAbout;
@@ -113,7 +121,9 @@ public class ViewController extends InfoHelper implements Initializable {
     Parser parser;
     HtmlRenderer renderer;
     WebEngine webEngine;
-    // markdown variables
+    // markdown/mathjax related variables
+
+
 
     //
     public FileChooser fc;
@@ -238,13 +248,13 @@ public class ViewController extends InfoHelper implements Initializable {
             //System.out.println(pathToURL(getNoteFolderPath()));
             switch(renderType){
                 case BOTH:
-                    webEngine.loadContent(markdownToHTML(tabContent) + scriptTags); // has to parse the html from markdown first, then split the tags
-                    break;
+                    webEngine.loadContent(markdownToHTML(tabContent) + scriptTags()); // has to parse the html from markdown first, then split the tags
+                    break;                                                            // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
                 case MARKDOWN:
                     webEngine.loadContent(markdownToHTML(tabContent));
                     break;
                 case MATHJAX:
-                    webEngine.loadContent(tabContent + scriptTags);
+                    webEngine.loadContent(tabContent + scriptTags());
                     break;
                 case TEXT:
                     webEngine.loadContent(tabContent);
@@ -258,7 +268,7 @@ public class ViewController extends InfoHelper implements Initializable {
 
 
 
-        }else{              // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
+        }else{
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
         }
         /*
@@ -317,10 +327,66 @@ public class ViewController extends InfoHelper implements Initializable {
     public void handleCloseSparkServerAction(ActionEvent actionEvent) { stop(); }
 
     public void handleShowAboutInfoAction(ActionEvent actionEvent) {
-        createNewNote((new FileHelper(getInfoFolderPath()+"\\README.txt").readFileToStr()), "README.txt");
+        createNewNote((new FileHelper("src\\main\\resources\\README.txt")).readFileToStr(), "README.txt");
     }
     //functions called past this point are not called as a direct result of interaction with the GUI//
 
+    public void handleNewNoteFromTemplateAction(ActionEvent actionEvent) {
+        setTmpInfo("");
+        try{
+            Stage newTemplateNoteStage = new Stage();
+            newTemplateNoteStage.setTitle("New Template");
+            newTemplateNoteStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("newTemplateNoteScene.fxml")), 195, 280));
+            newTemplateNoteStage.showAndWait();
+            if(!getTmpInfo().equals("")){
+                String newNoteContent = "";
+                FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+                JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
+                JSONArray tagsInTemplate = (JSONArray)jsonTemplates.get(getTmpInfo());
+                for (Object tag : tagsInTemplate){
+                    newNoteContent += "#" + tag.toString() + "#\n\n\n\n" + "#/" + tag.toString() + "#\n\n\n\n";
+                }
+                createNewNote(newNoteContent, getTmpInfo() + " note");
+            }
+        }catch(IOException e){
+
+        }
+    }
+    public void handleNewTemplateFromNoteAction(ActionEvent actionEvent){ // todo: support nested tags
+        setTmpInfo(""); // will be set to the chosen name for template
+        try {
+            if(!tabPaneIsEmpty()) {
+                Stage newTemplateStage = new Stage();
+                newTemplateStage.setTitle("New Template");
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("newTemplateScene.fxml"));
+
+                NewTemplateController templateController = new NewTemplateController(getCurrentTab().getText());
+                loader.setController(templateController);
+
+                Parent root = loader.load();
+
+                newTemplateStage.setScene(new Scene(root, 289, 172));
+                newTemplateStage.showAndWait();
+                if(!getTmpInfo().equals("") ){
+                    FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+                    JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
+                    FileHelper templateFile = new FileHelper(getNoteFolderPath() + "\\" + getCurrentTab().getText());
+                    JSONArray tags = new JSONArray();
+                    for (String tag : templateFile.searchFileForTags()){
+                        tags.add(tag);
+                    }
+                    JSONArray templateNames = new JSONArray();
+                    templateNames = (JSONArray)jsonTemplates.get("Template Names");
+                    templateNames.add(getTmpInfo());
+                    jsonTemplates.put("Template Names", templateNames);
+                    jsonTemplates.put(getTmpInfo(), tags);
+                    jsonTemplatesFile.writeToFile(jsonTemplates.toJSONString());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
@@ -395,7 +461,7 @@ public class ViewController extends InfoHelper implements Initializable {
     void stopLoadingAnimation(){ imgLoading.setImage(null); }
     void hideProgressBar(){ pbSyncProgress.setVisible(false); }
 // progress bar action
-    void syncDropboxToLocal(){
+    void syncDropboxToLocal(){ // todo: upload a file to dropbox that has info on whether or not you should sync
         pbSyncProgress.setVisible(true);
         dh.downloadFiles();
     }
@@ -427,7 +493,6 @@ public class ViewController extends InfoHelper implements Initializable {
                     }
                 }
         );
-
 
         // will change the render type preference.
         menuBtnBoolRenderText.selectedProperty().addListener(new ChangeListener<Boolean>() {

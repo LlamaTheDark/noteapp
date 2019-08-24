@@ -127,7 +127,6 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
         }
     }
 
-
     public boolean createFolder(){
         try {
             CreateFolderResult folder = client.files().createFolderV2("/myNotesFolder");

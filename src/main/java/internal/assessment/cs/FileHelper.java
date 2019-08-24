@@ -5,6 +5,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class FileHelper{
@@ -36,8 +39,8 @@ public class FileHelper{
             }
             bufferedReader.close(); // closes the bufferedReader
         }
-        catch (FileNotFoundException a){System.out.println("Could not find file " + "\'FILENAME\'");} // catches potential errors
-        catch (IOException e){System.out.println("Error reading file"  + "\'FILENAME\'");}
+        catch (FileNotFoundException a){System.out.println("Could not find file " + "\'" + (new File(FILEPATH).getName()) + "\'");} // catches potential errors
+        catch (IOException e){System.out.println("Error reading file"  + "\'" + (new File(FILEPATH).getName()) + "\'");}
         return model.shortenStringArrToIndex(fileRead, count); // returns the final output of the read string in array form
     }
     public String readFileToStr(){
@@ -54,8 +57,8 @@ public class FileHelper{
             }
             bufferedReader.close(); // closes the bufferedReader
         }
-        catch (FileNotFoundException a){System.out.println("Could not find file " + "\'FILENAME\'");} // catches potential errors
-        catch (IOException e){System.out.println("Error reading file"  + "\'FILENAME\'");}
+        catch (FileNotFoundException a){System.out.println("Could not find file " + "\'" + (new File(FILEPATH).getName()) + "\'");} // catches potential errors
+        catch (IOException e){System.out.println("Error reading file"  + "\'" + (new File(FILEPATH).getName()) + "\'");}
         return fileRead;
     }
     public JSONObject readToJSONObj(){
@@ -138,6 +141,18 @@ public class FileHelper{
 
         return ml;
     }
+    public LinkedList<String> searchFileForTags(){
+        LinkedList<String> tagsInFile = new LinkedList<>();
+        String stringFile = readFileToStr();
+        Pattern p = Pattern.compile("#(\\w+)#");
+        Matcher tagMatch = p.matcher(stringFile);
 
+        while(tagMatch.find()){
+            tagsInFile.add(tagMatch.group(1));
+        }
+
+        return tagsInFile;
+
+    }
 
 }

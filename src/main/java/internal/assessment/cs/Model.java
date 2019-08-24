@@ -137,7 +137,6 @@ public class Model {
                     splitArr[i] = "<span style=\"background-color: #DCDCDC;font-family: Consolas,monaco,monospace;font-size: 12.25\">";
                 }
                 splitArr[i+2] = "</span><br>";
-
             }
         }
 
