@@ -35,6 +35,10 @@ public class InfoHelper{
         tmp.put("accessToken", dbxAccessToken);
         fh.writeToFile(tmp.toJSONString());
     }
+
+    public String pathToURL(String path){
+        return "file:///C:/Users/mrsea/InternalAssessmentProjects/csiaWebApp/text.html"; // TODO: make this NOT have text.html
+    }
 }
 
 

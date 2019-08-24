@@ -1,6 +1,9 @@
 package internal.assessment.cs;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
+import javafx.beans.InvalidationListener;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +30,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.options.MutableDataSet;
 // markdown imports
 
+import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -37,6 +41,16 @@ import static spark.Spark.*;
 
 public class ViewController extends InfoHelper implements Initializable {
 
+    public String scriptTags = "" + // adds mathJax to render sequence
+            "<script type=\"text/x-mathjax-config\">\n" +
+            "  MathJax.Hub.Config({\n" +
+            "    tex2jax: {\n" +
+            "      inlineMath: [ ['$','$'], [\"\\\\(\",\"\\\\)\"] ],\n" +
+            "      processEscapes: true\n" +
+            "    }\n" +
+            "  });\n" +
+            "</script>\n" +
+            "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n";
 
     public MenuItem menuBtnFindFile;
     Model model = new Model();
@@ -60,7 +74,25 @@ public class ViewController extends InfoHelper implements Initializable {
     public MenuItem menuBtnExit;
     //
 
-    //under Help
+    //under rendering
+    public CheckMenuItem menuBtnBoolRenderText;
+    public CheckMenuItem menuBtnBoolRenderMj;
+    public CheckMenuItem menuBtnBoolRenderMd;
+    public CheckMenuItem menuBtnBoolPauseRender;
+    //
+
+    enum RenderType {
+        NONE,
+        TEXT,
+        MARKDOWN,
+        MATHJAX,
+        BOTH,
+        PAUSED
+    }
+    RenderType renderType = RenderType.MARKDOWN;
+    RenderType unPausedRender;
+
+    //under help
     public MenuItem btnAbout;
     //
 
@@ -200,8 +232,33 @@ public class ViewController extends InfoHelper implements Initializable {
     public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
         if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-            webEngine.loadContent(markdownToHTML(tabContent)); // has to parse the html from markdown first, then split the tags
-        }else{                                                                                      // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
+            //System.out.println(markdownToHTML(tabContent));
+            //webEngine.loadContent(tabContent);
+            //webEngine.load(pathToURL(getNoteFolderPath())); // todo: THERE IS A BUG IN JDK 11 WITH THIS TO ALWAYS THROW AN SSLException. JUST WORK AROUND IT
+            //System.out.println(pathToURL(getNoteFolderPath()));
+            switch(renderType){
+                case BOTH:
+                    webEngine.loadContent(markdownToHTML(tabContent) + scriptTags); // has to parse the html from markdown first, then split the tags
+                    break;
+                case MARKDOWN:
+                    webEngine.loadContent(markdownToHTML(tabContent));
+                    break;
+                case MATHJAX:
+                    webEngine.loadContent(tabContent + scriptTags);
+                    break;
+                case TEXT:
+                    webEngine.loadContent(tabContent);
+                    break;
+                case NONE:
+                    webEngine.loadContent("");
+                    break;
+                case PAUSED:
+                    break;
+            }
+
+
+
+        }else{              // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
         }
         /*
@@ -290,7 +347,6 @@ public class ViewController extends InfoHelper implements Initializable {
 
     public String markdownToHTML(String markdown){ // code from flexmark github homepage
         Node doc = parser.parse(markdown);
-        //System.out.println(renderedHTML);
         return model.parseTextForTags(renderer.render(doc));
     } // the code must manually place line breaks (<br>) for tags.
     // commonmark markdown does not support soft line breaks as <br>
@@ -345,7 +401,6 @@ public class ViewController extends InfoHelper implements Initializable {
     }
 
     //TODO: implement find file (to add to notes)
-    //TODO: save dropbox to local folder upon startup
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -355,6 +410,7 @@ public class ViewController extends InfoHelper implements Initializable {
         webEngine = wbvPreview.getEngine();
         if (dh.accountHasBeenLinked()){
             menuBtnSyncFiles.setDisable(false);
+            //syncDropboxToLocal();
         }
 
         tabPane.getSelectionModel().selectedItemProperty().addListener( // change listener to detect a tab selection change
@@ -372,8 +428,85 @@ public class ViewController extends InfoHelper implements Initializable {
                 }
         );
 
-        //syncDropboxToLocal();
 
+        // will change the render type preference.
+        menuBtnBoolRenderText.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue){
+                    menuBtnBoolRenderMd.setDisable(false);
+                    menuBtnBoolRenderMj.setDisable(false);
+                    menuBtnBoolPauseRender.setDisable(false);
+                    if(menuBtnBoolRenderMd.isSelected() && menuBtnBoolRenderMj.isSelected()){
+                        renderType = RenderType.BOTH;
+                    }else if(menuBtnBoolRenderMd.isSelected()){
+                        renderType = RenderType.MARKDOWN;
+                    }else if(menuBtnBoolRenderMj.isSelected()){
+                        renderType = RenderType.MATHJAX;
+                    }else{
+                        renderType = RenderType.TEXT;
+                    }
+                }else{
+                    renderType = RenderType.NONE;
+                    menuBtnBoolRenderMd.setDisable(true);
+                    menuBtnBoolRenderMj.setDisable(true);
+                    menuBtnBoolPauseRender.setDisable(true);
+                }
+                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+            }
+        });
+        menuBtnBoolRenderMd.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue){
+                    if(menuBtnBoolRenderMj.isSelected()){ // only have to test for markdown because you can only change markdown button
+                        renderType = RenderType.BOTH;     // if text is selected as true;
+                    }else{
+                        renderType = RenderType.MARKDOWN;
+                    }
+                }else{
+                    if(menuBtnBoolRenderMj.isSelected()){
+                        renderType = RenderType.MATHJAX;
+                    }else{
+                        renderType = RenderType.TEXT;
+                    }
+                }
+                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+            }
+        });
+        menuBtnBoolRenderMj.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue){
+                    if(menuBtnBoolRenderMd.isSelected()){
+                        renderType = RenderType.BOTH;
+                    }else{
+                        renderType = RenderType.MATHJAX;
+                    }
+                }else{
+                    if(menuBtnBoolRenderMd.isSelected()){
+                        renderType = RenderType.MARKDOWN;
+                    }else{
+                        renderType = RenderType.TEXT;
+                    }
+                }
+                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+            }
+        });
+        menuBtnBoolPauseRender.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue){
+                    unPausedRender = renderType;
+                    renderType = RenderType.PAUSED;
+                }else{
+                    if(unPausedRender!=null){
+                        renderType = unPausedRender;
+                    }
+                }
+                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+            }
+        });
     }
 }
 
