@@ -29,8 +29,15 @@ This will tag any information you place directly below the tag, as separated by 
 If you would like to tag more information than this, utilize the *end tag* feature. in which
 you create another tag of the same name where you wish it to end, but mark this with a '/' just before the tag name.
 
+Additionally, you can record mathematical notes with MathJax<sup>TM</sup>. By default, MathJax parsing is disabled as it is not as smooth to load.
+However, you can toggle this feature, as well as other types of rendering, in the 'Rendering' menu selection.
 
-#todo#
-* explain mathJAX and the render-type settings.
+An example of MathJax can be seen below. Give rendering it a try!
 
-#/todo#
+When $a \ne 0$, there are two solutions to $ ax^2 + bx + c = 0 $ and they are
+$$
+x = {-b \pm \sqrt{b^2-4ac} \over 2a}.
+$$
+
+If you would like to stop rendering, you can disable text rendering from the menu as well as pause the currently rendered screen.
+For a guide on how to use MathJax, visit the [MathJax homepage](https://www.mathjax.org/)

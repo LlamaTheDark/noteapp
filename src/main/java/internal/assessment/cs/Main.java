@@ -51,7 +51,6 @@ public class Main extends Application {
             templates.put("example template", exampleTemplate);
             templates.put("Template Names", templateNames);
             fhTemplates.writeFile(templates.toJSONString());
-
         }
 
         launch(args);

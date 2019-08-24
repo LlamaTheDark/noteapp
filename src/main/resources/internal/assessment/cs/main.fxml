@@ -26,14 +26,15 @@
                   <MenuItem fx:id="menuBtnFindFile" mnemonicParsing="false" onAction="#handFindFileAction" text="Add File..." />
                   <MenuItem fx:id="menuBtnOpenFile" mnemonicParsing="false" onAction="#handleOpenFileAction" text="Open File" />
                   <MenuItem fx:id="menuBtnCreateNewNote" mnemonicParsing="false" onAction="#handleCreateNewNoteAction" text="Create New Note" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnNewTemplateNote" mnemonicParsing="false" onAction="#handleNewNoteFromTemplateAction" text="New Note From Template..." />
+                  <MenuItem fx:id="menuBtnNewTemplate" mnemonicParsing="false" onAction="#handleNewTemplateFromNoteAction" text="Create New Template From This Note" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnSave" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAction" text="Save" />
                   <MenuItem fx:id="menuBtnSaveAs" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAsAction" text="Save As..." />
                   <MenuItem fx:id="menuBtnDeleteFile" mnemonicParsing="false" onAction="#handleDeleteFileAction" text="Delete" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnSetNotesFolder" mnemonicParsing="false" onAction="#handleSetNotesFolderAction" text="Set Notes Folder" />
-                  <MenuItem fx:id="menuBtnNewTemplate" mnemonicParsing="false" onAction="#handleNewTemplateFromNoteAction" text="Create New Template From This Note" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnExit" mnemonicParsing="false" onAction="#handleExitApplicationAction" text="Exit" />
                </items>

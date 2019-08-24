@@ -344,7 +344,7 @@ public class ViewController extends InfoHelper implements Initializable {
                 JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
                 JSONArray tagsInTemplate = (JSONArray)jsonTemplates.get(getTmpInfo());
                 for (Object tag : tagsInTemplate){
-                    newNoteContent += "#" + tag.toString() + "#\n\n\n\n" + "#/" + tag.toString() + "#\n\n\n\n";
+                    newNoteContent += "#" + tag.toString() + "#\n\n\n\n" + "#/" + tag.toString() + "#\n***\n\n";
                 }
                 createNewNote(newNoteContent, getTmpInfo() + " note");
             }

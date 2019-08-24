@@ -9,10 +9,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.net.URL;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class SearchSceneController extends InfoHelper implements Initializable {
@@ -79,7 +82,26 @@ public class SearchSceneController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //cbChooseTag.getItems().addAll(new String[]{"yes please", "do it hard"});
+        FileHelper jsonFileHelper = new FileHelper(getDataFolderPath() + "\\info.json");
+        JSONObject jsonInfo = jsonFileHelper.readToJSONObj();
+        JSONArray tags = new JSONArray();
+
+        for(File f : Objects.requireNonNull(new File(getNoteFolderPath()).listFiles())){ // TODO: you should maybe do this somewhere else...
+            FileHelper fh = new FileHelper(f.getPath());
+            System.out.println((fh.searchFileForTags()));
+            for (String tag : fh.searchFileForTags()){
+                if(!tags.contains(tag)){
+                    tags.add(tag);
+                }
+            }
+        }
+
+        jsonInfo.put("tags", tags);
+        jsonFileHelper.writeToFile(jsonInfo.toJSONString());
+
+        for(Object tag : tags) {
+            cbChooseTag.getItems().add(tag);
+        }
     }
 
 
