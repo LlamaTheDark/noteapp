@@ -89,6 +89,7 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
                         progressControl.resetProgressBar();
                         progressControl.stopLoadingAnimation();
                         progressControl.hideProgressBar();
+                        progressControl.resetProgressLabel();
                     }
                 });
 

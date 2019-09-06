@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 
-public class UploadTask extends Task {
+public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFORE SYNC WILL WORK OR FIX THAT PROBLEM
 
     private InfoHelper ih = new InfoHelper();
     private DbxClientV2 client;
@@ -23,6 +23,7 @@ public class UploadTask extends Task {
 
     @Override
     protected Object call() throws Exception {
+        this.updateMessage("Starting Sync...");
         File dir = new File(ih.getNoteFolderPath());
         File[] localFiles = dir.listFiles();
         int totalFiles = localFiles.length;

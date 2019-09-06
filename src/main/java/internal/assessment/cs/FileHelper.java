@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class FileHelper{
+public class FileHelper {
 
     Model model = new Model();
     JSONParser parser = new JSONParser();
@@ -18,7 +18,7 @@ public class FileHelper{
     final String WITH_DELIMITERS = "\\t|,|;|!|-|:|@|_|\\*|/";
 
     final String FILEPATH; // each FileHelper class is specific to one file.
-    // Thus, the FILENAME variable is final and cannot be
+    // Thus, the FILEPATH variable is final and cannot be
     // changed after instantiation in the constructor
 
     public FileHelper(String filePath){
@@ -95,7 +95,7 @@ public class FileHelper{
         }
     }
 
-    public MatchList searchFileForPhrase(String keyphrase, String tag) {
+    public MatchList searchFileForPhraseByTag(String keyphrase, String tag) {
         MatchList ml = new MatchList(new File(FILEPATH).getName());
 
         boolean isMatch;
@@ -138,13 +138,12 @@ public class FileHelper{
                 }
             }
         }
-
         return ml;
     }
     public LinkedList<String> searchFileForTags(){
         LinkedList<String> tagsInFile = new LinkedList<>();
         String stringFile = readFileToStr();
-        Pattern p = Pattern.compile("#(\\w+)#");
+        Pattern p = Pattern.compile("#([a-zA-Z0-9_ ']+)#"); // https://regex101.com/ is a lifesaver
         Matcher tagMatch = p.matcher(stringFile);
 
         while(tagMatch.find()){
@@ -154,5 +153,7 @@ public class FileHelper{
         return tagsInFile;
 
     }
-
+    public boolean containsTag(String tag){
+        return readFileToStr().contains("#" + tag + "#");
+    }
 }

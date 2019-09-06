@@ -1,9 +1,6 @@
 package internal.assessment.cs;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
-import javafx.beans.InvalidationListener;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -33,7 +30,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 // markdown imports
 
-import javax.net.ssl.SSLException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -44,7 +40,11 @@ import static spark.Spark.*;
 
 public class ViewController extends InfoHelper implements Initializable {
 
+
+
     public String scriptTags(){
+
+
         return "" + // adds mathJax to render sequence
             "<script type=\"text/x-mathjax-config\">\n" +
             "  MathJax.Hub.Config({\n" +
@@ -63,21 +63,21 @@ public class ViewController extends InfoHelper implements Initializable {
     //under sync
     public MenuItem menuBtnAuthDropbox;
     public MenuItem menuBtnSyncFiles;
-    public MenuItem menuBtnAuthNewAcc;
-
-    //under edit
-    public MenuItem menuBtnDeleteFile; //TODO: VERY IMPORTANT rename all methods associated with a button or action to 'handle...Action'
-    public MenuItem menuBtnRender;
+    public MenuItem menuBtnUnlinkDbxAcc;
+    public MenuItem menuBtnDownloadFiles;
 
     //under file
-    public MenuItem menuBtnCreateNewNote;
-    public MenuItem menuBtnSave;
-    public MenuItem menuBtnSaveAs;
     public MenuItem menuBtnOpenFile;
-    public MenuItem menuBtnSetNotesFolder;
+    public MenuItem menuBtnCreateNewNote;
     //----------------------------------//
     public MenuItem menuBtnNewTemplateNote;
     public MenuItem menuBtnNewTemplate;
+    //----------------------------------//
+    public MenuItem menuBtnSave;
+    public MenuItem menuBtnSaveAs;
+    public MenuItem menuBtnDeleteFile;
+    //----------------------------------//
+    public MenuItem menuBtnSetNotesFolder;
     //----------------------------------//
     public MenuItem menuBtnExit;
     //
@@ -96,6 +96,7 @@ public class ViewController extends InfoHelper implements Initializable {
         BOTH,
         PAUSED
     }
+
     private RenderType renderType = RenderType.MARKDOWN;
     private RenderType unPausedRender;
     //
@@ -183,7 +184,7 @@ public class ViewController extends InfoHelper implements Initializable {
         newTabTxt.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-                handleShowRenderedTextAction(new ActionEvent());
+                showRenderedText();
             }
         });
     }
@@ -212,21 +213,17 @@ public class ViewController extends InfoHelper implements Initializable {
         selectedFile = openFileChooser("Open...", "open", ""); // shows the open dialogue and sets selectedFile to whatever file is selected
         if (selectedFile != null){
             FileHelper fh = new FileHelper(selectedFile.getPath());
-            createNewNote(model.stringArrToString(fh.readFileToArr()), selectedFile.getName()); // going to have to change all 'readFileToArr' bits
-        }else{                                                                                  // TODO: eliminate the redundancy of the stringArrToString
+            createNewNote(fh.readFileToStr(), selectedFile.getName()); // going to have to change all 'readFileToArr' bits
+        }else{
             System.out.println("This is not a valid file name");
         }
     }
-    public void handFindFileAction(ActionEvent actionEvent) {
-
-    }
     public void handleDeleteFileAction(ActionEvent actionEvent) {
         if (!tabPaneIsEmpty()){
-            System.out.println(getNoteFolderPath() + "\\" + getCurrentTab().getText());
-            Alert confirmDelete = new Alert(Alert.AlertType.CONFIRMATION); // TODO: make a Model function to make a CONFIRMATION message
-            confirmDelete.setHeaderText("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?");
-            confirmDelete.setContentText("Press \'OK\' to confirm.");
-            if (confirmDelete.showAndWait().get() == ButtonType.OK) {
+//            System.out.println(getNoteFolderPath() + "\\" + getCurrentTab().getText());
+            if (Model.showConfirmationMsg("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?",
+                    "Press \'OK\' to confirm."
+                    )) {
                 if((new FileHelper(getNoteFolderPath() + "\\" + getCurrentTab().getText())).deleteFile()){
                     Model.showInformationMsg("Success", getCurrentTab().getText() + " successfully deleted from directory path.");
                     tabPane.getTabs().remove(getCurrentTab());
@@ -237,45 +234,6 @@ public class ViewController extends InfoHelper implements Initializable {
         }else{
             Model.showErrorMsg("No File to Delete", "Open a file to delete it.");
         }
-    }
-
-    public void handleShowRenderedTextAction(ActionEvent actionEvent){ // Hides plain text editor and renders/shows WebView
-        if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
-            String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-            //System.out.println(markdownToHTML(tabContent));
-            //webEngine.loadContent(tabContent);
-            //webEngine.load(pathToURL(getNoteFolderPath())); // todo: THERE IS A BUG IN JDK 11 WITH THIS TO ALWAYS THROW AN SSLException. JUST WORK AROUND IT
-            //System.out.println(pathToURL(getNoteFolderPath()));
-            switch(renderType){
-                case BOTH:
-                    webEngine.loadContent(markdownToHTML(tabContent) + scriptTags()); // has to parse the html from markdown first, then split the tags
-                    break;                                                            // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
-                case MARKDOWN:
-                    webEngine.loadContent(markdownToHTML(tabContent));
-                    break;
-                case MATHJAX:
-                    webEngine.loadContent(tabContent + scriptTags());
-                    break;
-                case TEXT:
-                    webEngine.loadContent(tabContent);
-                    break;
-                case NONE:
-                    webEngine.loadContent("");
-                    break;
-                case PAUSED:
-                    break;
-            }
-
-
-
-        }else{
-            Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
-        }
-        /*
-        WebEngine htmlEngine = (((WebView) ((ScrollPane) tmp.getContent()).getContent()).getEngine()); // finds the webengine in the corresponding scrollpane/webview
-        htmlEngine.loadContent("<b>biggie cheese</b>");
-        ((TextArea)tmp.getContent()).setText("");*/
-
     }
 
     public void handleSearchAction(ActionEvent actionEvent) {
@@ -300,8 +258,10 @@ public class ViewController extends InfoHelper implements Initializable {
                 authDbxStage.setTitle("Authorize Dropbox");
                 authDbxStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("authorizeDropboxScene.fxml")), 472, 474));
                 authDbxStage.showAndWait();
-                if(getTmpInfo().equals("successful authorization")){
+                if(getTmpInfo()!=null && getTmpInfo().equals("successful authorization")){
                     menuBtnSyncFiles.setDisable(false);
+                    menuBtnUnlinkDbxAcc.setDisable(false);
+                    menuBtnDownloadFiles.setDisable(false);
                 }
             }catch(IOException e){
                 e.printStackTrace();
@@ -310,10 +270,36 @@ public class ViewController extends InfoHelper implements Initializable {
         }else{
             Model.showInformationMsg("An account has already been linked.", "Account Name: " + dh.getClientName());
         }
+        dh = new DropboxHelper(this);
     }
     public void handleSyncFilesToDropboxAction(ActionEvent actionEvent) {
-        pbSyncProgress.setVisible(true);
-        dh.uploadFiles();
+        if(dh.accountHasBeenLinked()){
+            pbSyncProgress.setVisible(true);
+            dh.uploadFiles();
+        }
+    }
+    public void handleOverwriteLocalFilesAction(ActionEvent actionEvent){
+        if(dh.accountHasBeenLinked() && Model.showConfirmationMsg("Are you sure you want to localize your Dropbox files?",
+                "All local files will be overwritten.")) {
+            pbSyncProgress.setVisible(true);
+            dh.downloadFiles();
+        }
+    }
+    public void handleUnlinkDbxAcc(ActionEvent actionEvent){
+        if(dh.accountHasBeenLinked()){
+            if (Model.showConfirmationMsg("Are you sure you want to unlink the current account?",
+                    "If you change your mind past this point, you will have to relink your account again."
+            )) {
+                setDbxAccessToken("");
+                Model.showInformationMsg("Account successfully unlinked.", "You may now link another different account.");
+                dh = new DropboxHelper(this); // resets the dropbox helper client
+                menuBtnUnlinkDbxAcc.setDisable(true);
+                menuBtnSyncFiles.setDisable(true);
+                menuBtnDownloadFiles.setDisable(true);
+            }
+        }else{
+            Model.showInformationMsg("No account has been linked.", "Link an account to unlink it.");
+        }
     }
 
     public void handleExitApplicationAction(ActionEvent actionEvent) {
@@ -336,7 +322,7 @@ public class ViewController extends InfoHelper implements Initializable {
         try{
             Stage newTemplateNoteStage = new Stage();
             newTemplateNoteStage.setTitle("New Template");
-            newTemplateNoteStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("newTemplateNoteScene.fxml")), 195, 280));
+            newTemplateNoteStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("newTemplateNoteScene.fxml")), 195, 300));
             newTemplateNoteStage.showAndWait();
             if(!getTmpInfo().equals("")){
                 String newNoteContent = "";
@@ -375,13 +361,14 @@ public class ViewController extends InfoHelper implements Initializable {
                     for (String tag : templateFile.searchFileForTags()){
                         tags.add(tag);
                     }
-                    JSONArray templateNames = new JSONArray();
-                    templateNames = (JSONArray)jsonTemplates.get("Template Names");
+                    JSONArray templateNames = (JSONArray)jsonTemplates.get("Template Names");
                     templateNames.add(getTmpInfo());
                     jsonTemplates.put("Template Names", templateNames);
                     jsonTemplates.put(getTmpInfo(), tags);
                     jsonTemplatesFile.writeToFile(jsonTemplates.toJSONString());
                 }
+            }else{
+                Model.showErrorMsg("No File Selected", "Please open a file to create a template from it.");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -392,6 +379,68 @@ public class ViewController extends InfoHelper implements Initializable {
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
 
+//    public void showRenderedText(String text){ // Hides plain text editor and renders/shows WebView
+//       if(!tabPaneIsEmpty()){
+//            String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
+//            switch(renderType){
+//                case BOTH:
+//                    webEngine.loadContent(model.highlightText(markdownToHTML(tabContent) + scriptTags(), text)); // has to parse the html from markdown first, then split the tags
+//                    break;                                                            // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
+//                case MARKDOWN:
+//                    webEngine.loadContent(model.highlightText(markdownToHTML(tabContent), text));
+//                    break;
+//                case MATHJAX:
+//                    webEngine.loadContent(model.highlightText(tabContent + scriptTags(), text));
+//                    break;
+//                case TEXT:
+//                    webEngine.loadContent(model.highlightText(tabContent, text));
+//                    break;
+//                case NONE:
+//                    webEngine.loadContent("");
+//                    break;
+//                case PAUSED:
+//                    break;
+//            }
+//        }else{
+//            Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
+//        }
+//    }
+
+    public void showRenderedText(){ // Hides plain text editor and renders/shows WebView
+        if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
+            String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
+            //System.out.println(markdownToHTML(tabContent));
+            //webEngine.loadContent(tabContent);
+            //webEngine.load(pathToURL(getNoteFolderPath())); // todo: THERE IS A BUG IN JDK 11 WITH THIS TO ALWAYS THROW AN SSLException. JUST WORK AROUND IT
+            //System.out.println(pathToURL(getNoteFolderPath()));
+            switch(renderType){
+                case BOTH:
+                    webEngine.loadContent(markdownToHTML(tabContent) + scriptTags()); // has to parse the html from markdown first, then split the tags
+                    break;                                                            // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
+                case MARKDOWN:
+                    webEngine.loadContent(markdownToHTML(tabContent));
+                    break;
+                case MATHJAX:
+                    webEngine.loadContent(tabContent + scriptTags());
+                    break;
+                case TEXT:
+                    webEngine.loadContent(tabContent);
+                    break;
+                case NONE:
+                    webEngine.loadContent("");
+                    break;
+                case PAUSED:
+                    break;
+            }
+        }else{
+            Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
+        }
+        /*
+        WebEngine htmlEngine = (((WebView) ((ScrollPane) tmp.getContent()).getContent()).getEngine()); // finds the webengine in the corresponding scrollpane/webview
+        htmlEngine.loadContent("<b>biggie cheese</b>");
+        ((TextArea)tmp.getContent()).setText("");*/
+
+    }
 
     public Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
     public boolean tabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
@@ -433,7 +482,7 @@ public class ViewController extends InfoHelper implements Initializable {
         newTabTxt.textProperty().addListener(new ChangeListener<String>() { // adds event listener to detect when a change has been made to the text
             @Override                                                       // upon hearing a change, the new markdown text is rendered
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-                handleShowRenderedTextAction(new ActionEvent());
+                showRenderedText();
             }
         });
     }
@@ -460,6 +509,7 @@ public class ViewController extends InfoHelper implements Initializable {
     void startLoadingAnimation(){ imgLoading.setImage(new Image("/loading.gif")); }
     void stopLoadingAnimation(){ imgLoading.setImage(null); }
     void hideProgressBar(){ pbSyncProgress.setVisible(false); }
+    void resetProgressLabel(){ lblSyncUpdate.setText(""); }
 // progress bar action
     void syncDropboxToLocal(){ // todo: upload a file to dropbox that has info on whether or not you should sync
         pbSyncProgress.setVisible(true);
@@ -476,7 +526,13 @@ public class ViewController extends InfoHelper implements Initializable {
         webEngine = wbvPreview.getEngine();
         if (dh.accountHasBeenLinked()){
             menuBtnSyncFiles.setDisable(false);
+            menuBtnDownloadFiles.setDisable(false);
             //syncDropboxToLocal();
+        }else{
+            menuBtnSyncFiles.setDisable(true);
+            menuBtnDownloadFiles.setDisable(true);
+            menuBtnUnlinkDbxAcc.setDisable(true);
+            menuBtnAuthDropbox.setDisable(true);
         }
 
         tabPane.getSelectionModel().selectedItemProperty().addListener( // change listener to detect a tab selection change
@@ -488,7 +544,7 @@ public class ViewController extends InfoHelper implements Initializable {
                             menuBtnSaveAs.setDisable(true);
                             webEngine.loadContent("");
                         }else{
-                            handleShowRenderedTextAction(new ActionEvent());
+                            showRenderedText();
                         }
                     }
                 }
@@ -517,7 +573,8 @@ public class ViewController extends InfoHelper implements Initializable {
                     menuBtnBoolRenderMj.setDisable(true);
                     menuBtnBoolPauseRender.setDisable(true);
                 }
-                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+                if(!tabPaneIsEmpty()){
+                    showRenderedText();}
             }
         });
         menuBtnBoolRenderMd.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -536,7 +593,8 @@ public class ViewController extends InfoHelper implements Initializable {
                         renderType = RenderType.TEXT;
                     }
                 }
-                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+                if(!tabPaneIsEmpty()){
+                    showRenderedText();}
             }
         });
         menuBtnBoolRenderMj.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -555,7 +613,8 @@ public class ViewController extends InfoHelper implements Initializable {
                         renderType = RenderType.TEXT;
                     }
                 }
-                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+                if(!tabPaneIsEmpty()){
+                    showRenderedText();}
             }
         });
         menuBtnBoolPauseRender.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -569,7 +628,8 @@ public class ViewController extends InfoHelper implements Initializable {
                         renderType = unPausedRender;
                     }
                 }
-                if(!tabPaneIsEmpty()){handleShowRenderedTextAction(new ActionEvent());}
+                if(!tabPaneIsEmpty()){
+                    showRenderedText();}
             }
         });
     }
@@ -578,4 +638,10 @@ public class ViewController extends InfoHelper implements Initializable {
 /*
 TODO: start server: get("/hello", (req, res) -> "Hello World");
 TODO: stop server: stop();
+ */
+
+
+/*
+TODO: implement an "add file(s)" option to add files to the notes folder
+
  */

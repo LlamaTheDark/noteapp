@@ -40,7 +40,7 @@ public class MatchList {
             }
         }else { System.out.println("There were no matches found in the file at " + filename + "\n"); }
         System.out.println("-------------------------------------------------------------------------------\n");
-    }
+    } // this was solely for development purposes
 
     public String toSearchResult(int index){
         return "In \'" + getFilename() + "\', line " + getLineNum(index) + ": \"..." + getSampleText(index) + "...\"";

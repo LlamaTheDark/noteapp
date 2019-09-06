@@ -1,6 +1,7 @@
 package internal.assessment.cs;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.awt.*;
 import java.net.URI;
@@ -36,6 +37,12 @@ public class Model {
         informationMsg.setHeaderText(information);
         informationMsg.setContentText(subText);
         informationMsg.showAndWait();
+    }
+    public static boolean showConfirmationMsg(String header, String content){
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setHeaderText(header);
+        confirmation.setContentText(content);
+        return confirmation.showAndWait().get() == ButtonType.OK;
     }
 
     public String addLineBreaks(String text){
@@ -91,6 +98,10 @@ public class Model {
         // itself in the search
         return limits;
     }
+
+//    public String highlightText(String content, String text){
+//        return content.replaceAll(text, "<mark>" + text + "</mark>");
+//    }
 
     public String arrayToString(String[] arr) {
         String toString = "";

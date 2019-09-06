@@ -17,13 +17,12 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane prefHeight="701.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.ViewController">
+<AnchorPane prefHeight="660.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.ViewController">
    <children>
       <MenuBar fx:id="menu" layoutX="8.0" layoutY="1.0" prefHeight="25.0" prefWidth="720.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <menus>
             <Menu mnemonicParsing="false" text="File">
                <items>
-                  <MenuItem fx:id="menuBtnFindFile" mnemonicParsing="false" onAction="#handFindFileAction" text="Add File..." />
                   <MenuItem fx:id="menuBtnOpenFile" mnemonicParsing="false" onAction="#handleOpenFileAction" text="Open File" />
                   <MenuItem fx:id="menuBtnCreateNewNote" mnemonicParsing="false" onAction="#handleCreateNewNoteAction" text="Create New Note" />
                   <SeparatorMenuItem mnemonicParsing="false" />
@@ -37,11 +36,6 @@
                   <MenuItem fx:id="menuBtnSetNotesFolder" mnemonicParsing="false" onAction="#handleSetNotesFolderAction" text="Set Notes Folder" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnExit" mnemonicParsing="false" onAction="#handleExitApplicationAction" text="Exit" />
-               </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Edit">
-               <items>
-                  <MenuItem fx:id="menuBtnRender" mnemonicParsing="false" onAction="#handleShowRenderedTextAction" text="Render Markdown" />
                </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
@@ -60,9 +54,11 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Sync">
                <items>
-                  <MenuItem fx:id="menuBtnSyncFiles" disable="true" mnemonicParsing="false" onAction="#handleSyncFilesToDropboxAction" text="Sync Files" />
+                  <MenuItem fx:id="menuBtnDownloadFiles" mnemonicParsing="false" onAction="#handleOverwriteLocalFilesAction" text="Download Files" />
+                  <MenuItem fx:id="menuBtnSyncFiles" disable="true" mnemonicParsing="false" onAction="#handleSyncFilesToDropboxAction" text="Upload Files" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnAuthDropbox" mnemonicParsing="false" onAction="#handleAuthDropboxAction" text="Authorize Dropbox" />
-                  <MenuItem fx:id="menuBtnAuthNewAcc" mnemonicParsing="false" text="Authorize New Account" />
+                  <MenuItem fx:id="menuBtnUnlinkDbxAcc" mnemonicParsing="false" onAction="#handleUnlinkDbxAcc" text="Unlink Dropbox Account" />
                </items>
             </Menu>
          </menus>
@@ -72,7 +68,7 @@
             <Image url="@../../../magnifyingGlass.png" />
          </image>
       </ImageView>
-      <SplitPane dividerPositions="0.5" layoutY="25.0" prefHeight="629.0" prefWidth="720.0" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+      <SplitPane dividerPositions="0.5" layoutY="25.0" prefHeight="629.0" prefWidth="720.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
          <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
@@ -96,18 +92,8 @@
             <Font name="Consolas" size="18.0" />
          </font>
       </Text>
-      <ProgressBar fx:id="pbSyncProgress" layoutX="250.0" layoutY="10.0" prefHeight="9.0" prefWidth="160.0" progress="0.0" visible="false" />
-      <ImageView fx:id="imgLoading" fitHeight="17.0" fitWidth="22.0" layoutX="420.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
-      <Label fx:id="lblSyncUpdate" layoutX="446.0" layoutY="4.0" />
-      <Button layoutX="635.0" layoutY="667.0" mnemonicParsing="false" onAction="#handleOpenSparkServerAction" prefHeight="25.0" prefWidth="33.0" text="start" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="52.0">
-         <font>
-            <Font size="9.0" />
-         </font>
-      </Button>
-      <Button layoutX="676.0" layoutY="667.0" mnemonicParsing="false" onAction="#handleCloseSparkServerAction" prefHeight="25.0" prefWidth="33.0" text="stop" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="10.0">
-         <font>
-            <Font size="9.0" />
-         </font>
-      </Button>
+      <ProgressBar fx:id="pbSyncProgress" layoutX="211.0" layoutY="10.0" prefHeight="9.0" prefWidth="160.0" progress="0.0" visible="false" />
+      <ImageView fx:id="imgLoading" fitHeight="17.0" fitWidth="22.0" layoutX="375.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="lblSyncUpdate" layoutX="401.0" layoutY="4.0" />
    </children>
 </AnchorPane>

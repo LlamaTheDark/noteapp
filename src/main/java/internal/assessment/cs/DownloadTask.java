@@ -33,7 +33,7 @@ public class DownloadTask extends Task {
                 }
             }
             if(!existsOnDropbox){
-                this.updateMessage("Deleting from Dropbox: " + f.getName());
+                this.updateMessage("Deleting " + f.getName() + " from Dropbox...");
                 if(deleteLocalFile(f.getAbsolutePath())){
                     this.updateMessage(f.getName() + " successfully deleted.");
                 }

@@ -69,26 +69,44 @@ public class Main extends Application {
         ViewController controller = loader.getController();
         Scene mainScene = new Scene(root, 719, 701);
         primaryStage.setScene(mainScene);
+        primaryStage.setTitle("Notes");
         primaryStage.show();
 
         mainScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode()==KeyCode.S && event.isControlDown()){
-                    controller.handleSaveFileAction(new ActionEvent());
-                }
-                if(event.getCode()==KeyCode.S
+                 if(event.getCode() == KeyCode.N // create new note from a template
                         && event.isShiftDown()
                         && event.isControlDown()
-                ){
+                 ){
+                    controller.handleNewNoteFromTemplateAction(new ActionEvent());
+                 }
+                 else if(event.getCode()==KeyCode.S // save file as...
+                        && event.isShiftDown()
+                        && event.isControlDown()
+                 ){
                     controller.handleSaveFileAsAction(new ActionEvent());
-                }
-                if(event.getCode()==KeyCode.W && event.isControlDown()){
+                 }
+                 else if(event.getCode() == KeyCode.T // create new template from currently selected note
+                        && event.isShiftDown()
+                        && event.isControlDown()
+                 ){
+                    controller.handleNewTemplateFromNoteAction(new ActionEvent());
+                 }
+                 else if(event.getCode()==KeyCode.S && event.isControlDown()){ // save file
+                    controller.handleSaveFileAction(new ActionEvent());
+                 }
+                 else if(event.getCode()==KeyCode.W && event.isControlDown()){ // close window
                     controller.closeTab();
-                }
-                if (event.getCode() == KeyCode.Q && event.isControlDown()) {
+                 }
+                 else if (event.getCode() == KeyCode.Q && event.isControlDown()) { // close main application
                     controller.handleExitApplicationAction(new ActionEvent());
-                }
+                 }
+                 else if(event.getCode() == KeyCode.N && event.isControlDown()){ // create new blank note
+                    controller.handleCreateNewNoteAction(new ActionEvent());
+                 }
+
+
             }
         }); // key pressed events (e.g. ctrl+S -> save file)
     }
