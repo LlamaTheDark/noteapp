@@ -1,6 +1,7 @@
 package internal.assessment.cs;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -10,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
+import java.util.EventListener;
 import java.util.ResourceBundle;
 
 public class NewTemplateController extends InfoHelper implements Initializable {
@@ -47,5 +49,18 @@ public class NewTemplateController extends InfoHelper implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         FileHelper currentFile = new FileHelper(getNoteFolderPath() + "\\" + filename);
         lstvwTags.getItems().addAll(currentFile.searchFileForTags());
+
+        btnFinish.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handleDoneAction(event);
+            }
+        });
+        btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handleCancelAction(event);
+            }
+        });
     }
 }

@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="noteapp.main">
+    <output-path>$PROJECT_DIR$/out/artifacts/noteapp_main</output-path>
+    <root id="root">
+      <element id="archive" name="noteapp_main.jar">
+        <element id="module-output" name="noteapp.main" />
+      </element>
+    </root>
+  </artifact>
+</component>
