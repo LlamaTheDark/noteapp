@@ -81,7 +81,6 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
 
         sync.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, //
                 new EventHandler<WorkerStateEvent>(){
-
                     @Override
                     public void handle(WorkerStateEvent event) {
                         progressControl.unBindProgressBar();

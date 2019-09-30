@@ -38,22 +38,39 @@ public class NewTemplateNoteController extends InfoHelper implements Initializab
 
     public void handleDeleteTemplateAction(ActionEvent actionEvent) { // does not actually delete the template, just the availability
         if(lstvwTemplates.getSelectionModel().getSelectedItem()!=null){
-            FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+            FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.sm");
+
+            SMStorageProtocol SMTemplates = SMStorageProtocol.parseStringToSMSP(templatesFile.readFileToStr());
+            SMArrayItem SMTemplateNames = (SMArrayItem)SMTemplates.get("Template Names");
+            SMTemplateNames.remove(lstvwTemplates.getSelectionModel().getSelectedItem().toString());
+            SMTemplates.put("Template Names", SMTemplateNames);
+            templatesFile.writeToFile(SMTemplates.toString());
+            reloadListView();
+            /*
             JSONObject jsonTemplates = templatesFile.readToJSONObj();
             JSONArray templateNames = (JSONArray)jsonTemplates.get("Template Names");
             templateNames.remove(lstvwTemplates.getSelectionModel().getSelectedItem().toString());
             jsonTemplates.put("Template Names", templateNames);
             templatesFile.writeToFile(jsonTemplates.toJSONString());
             reloadListView();
+             */
         }
     }
 
     private void reloadListView(){
         lstvwTemplates.getItems().clear();
-        FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+        FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.sm");
+
+        SMStorageProtocol SMTemplates = SMStorageProtocol.parseStringToSMSP(templatesFile.readFileToStr());
+        SMArrayItem SMTemplateNames = (SMArrayItem)SMTemplates.get("Template Names");
+        for(int i = 0; i < SMTemplateNames.getLength(); i++){
+            lstvwTemplates.getItems().add(SMTemplateNames.get(i).getName());
+        }
+        /*
         JSONObject jsonTemplates = templatesFile.readToJSONObj();
         JSONArray templateNames = (JSONArray) jsonTemplates.get("Template Names");
         lstvwTemplates.getItems().addAll(templateNames);
+         */
     }
 
     @Override

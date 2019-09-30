@@ -19,14 +19,32 @@ import org.json.simple.JSONObject;
 public class Main extends Application {
 
     public static void main(String[] args) {
-/*
+
         File tmp = new File("C:\\NoteAppData"); // creates a set place for files to be stored
                                                          // allows for non-volatile information storage
-        FileHelper fhInfo = new FileHelper(tmp.getPath() + "\\info.json");
-        FileHelper fhTemplates = new FileHelper(tmp.getPath() + "\\templates.json");
+        FileHelper fhInfo = new FileHelper(tmp.getPath() + "\\info.sm");
+        FileHelper fhTemplates = new FileHelper(tmp.getPath() + "\\templates.sm");
 
         if (!tmp.exists()){
             tmp.mkdir();
+            SMStorageProtocol SMSPInfo = new SMStorageProtocol();
+            SMSPInfo.put("noteFolderPath", "C:\\");
+            SMSPInfo.put("accessToken", "");
+            SMSPInfo.put("tags", new SMArrayItem());
+            fhInfo.writeFile(SMSPInfo.toString());
+
+            SMStorageProtocol SMSPTemplates = new SMStorageProtocol();
+            SMArrayItem exampleTemplate = new SMArrayItem();
+            SMArrayItem templateNames = new SMArrayItem();
+            templateNames.add("example template", "");
+            exampleTemplate.add("description", "");
+            exampleTemplate.add("mathematics", "");
+            exampleTemplate.add("date", "");
+            SMSPTemplates.put("example template", exampleTemplate);
+            SMSPTemplates.put("Template Names", templateNames);
+            fhTemplates.writeFile(SMSPTemplates.toString());
+
+            /*
             JSONObject jsonINFO = new JSONObject();
             jsonINFO.put("noteFolderPath", "C:\\");
             jsonINFO.put("accessToken", "");
@@ -43,10 +61,11 @@ public class Main extends Application {
             templates.put("example template", exampleTemplate);
             templates.put("Template Names", templateNames);
             fhTemplates.writeFile(templates.toJSONString());
+             */
         }
 
         launch(args);
-*/
+/*
         SMStorageProtocol test = new SMStorageProtocol();
 
         test.put("testItem", "check 123");
@@ -64,6 +83,7 @@ public class Main extends Application {
         //System.out.println("\n\n\n" + test.toString());
         //System.out.println(SMArray.toString());
 
+/*
 
         SMStorageProtocol SMSP = SMStorageProtocol.parseStringToSMSP(">testboi=cheese>eatmyballs=poop>whatareyou=what>arr=[whatwhat=12,whatwho=5]>lastone=nice");
 

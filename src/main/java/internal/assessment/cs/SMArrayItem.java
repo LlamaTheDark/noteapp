@@ -3,12 +3,15 @@ package internal.assessment.cs;
 public class SMArrayItem { // TODO: back up current state of files before you change JSON to Seamus Morrison Storage Protocol
     private String name;
     private SMArrayNode head;
+    private int length = 0;
 
     public SMArrayItem(String name, SMArrayItem arrayItem){
         this.name = name;
         head = arrayItem.getHead();
     }
     public SMArrayItem(){}
+
+    public int getLength(){ return length; }
 
     public SMArrayNode getHead(){ return head; }
     public String getName(){ return name; }
@@ -23,6 +26,7 @@ public class SMArrayItem { // TODO: back up current state of files before you ch
             }
             tmp.setNext(new SMArrayNode(name, value));
         }
+        length++;
     }
     public void remove(String name){
         if(!isEmpty()){
@@ -36,6 +40,31 @@ public class SMArrayItem { // TODO: back up current state of files before you ch
                 }
                 tmp.setNext(tmp.getNext().getNext());
             }
+            length--;
+        }
+    }
+
+    public SMArrayNode get(int index){
+        if(isEmpty()){
+            return null;
+        }else{
+            int count = 0;
+            SMArrayNode tmp = new SMArrayNode(head);
+            while(tmp.getNext()!=null && count < index){
+                tmp = tmp.getNext();
+            }
+            return tmp;
+        }
+    }
+    public SMArrayNode get(String name){
+        if(isEmpty()){
+            return null;
+        }else{
+            SMArrayNode tmp = new SMArrayNode(head);
+            while(tmp.getNext()!=null && name != tmp.getName()){
+                tmp = tmp.getNext();
+            }
+            return tmp;
         }
     }
 
