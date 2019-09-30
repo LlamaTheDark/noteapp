@@ -35,16 +35,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import static spark.Spark.*;
 
 public class ViewController extends InfoHelper implements Initializable {
 
-
-
-    public String scriptTags(){
-
-
+    private String scriptTags(){
         return "" + // adds mathJax to render sequence
             "<script type=\"text/x-mathjax-config\">\n" +
             "  MathJax.Hub.Config({\n" +
@@ -54,11 +51,10 @@ public class ViewController extends InfoHelper implements Initializable {
             "    }\n" +
             "  });\n" +
             "</script>\n" +
-            "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n" +
-                "";} // only made it a function so that I could collapse it... :/
+            "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n";
+    }
 
-    public MenuItem menuBtnFindFile;
-    Model model = new Model();
+    private Model model = new Model();
 
     //under sync
     public MenuItem menuBtnAuthDropbox;
@@ -118,18 +114,18 @@ public class ViewController extends InfoHelper implements Initializable {
     // sync bar
 
     //
-    MutableDataSet options;
-    Parser parser;
-    HtmlRenderer renderer;
-    WebEngine webEngine;
+    private MutableDataSet options;
+    private Parser parser;
+    private HtmlRenderer renderer;
+    private WebEngine webEngine;
     // markdown/mathjax related variables
 
 
 
     //
-    public FileChooser fc;
+    private FileChooser fc;
     private File selectedFile;
-    public int tabCount = 0;
+    private int tabCount = 0;
     //private String noteFolderPath; // had to change this from the file to the String because files are immutable objects
                                    // now it just creates a new file with the noteFolderPath directory whenever it is needed.
     // for saving and opening files (the window helper from the OS) // TODO: eventually sync the files from the notes folder
@@ -214,9 +210,9 @@ public class ViewController extends InfoHelper implements Initializable {
         if (selectedFile != null){
             FileHelper fh = new FileHelper(selectedFile.getPath());
             createNewNote(fh.readFileToStr(), selectedFile.getName()); // going to have to change all 'readFileToArr' bits
-        }else{
+        }/*else{
             System.out.println("This is not a valid file name");
-        }
+        }*/
     }
     public void handleDeleteFileAction(ActionEvent actionEvent) {
         if (!tabPaneIsEmpty()){
@@ -379,40 +375,14 @@ public class ViewController extends InfoHelper implements Initializable {
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
 
-//    public void showRenderedText(String text){ // Hides plain text editor and renders/shows WebView
-//       if(!tabPaneIsEmpty()){
-//            String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-//            switch(renderType){
-//                case BOTH:
-//                    webEngine.loadContent(model.highlightText(markdownToHTML(tabContent) + scriptTags(), text)); // has to parse the html from markdown first, then split the tags
-//                    break;                                                            // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
-//                case MARKDOWN:
-//                    webEngine.loadContent(model.highlightText(markdownToHTML(tabContent), text));
-//                    break;
-//                case MATHJAX:
-//                    webEngine.loadContent(model.highlightText(tabContent + scriptTags(), text));
-//                    break;
-//                case TEXT:
-//                    webEngine.loadContent(model.highlightText(tabContent, text));
-//                    break;
-//                case NONE:
-//                    webEngine.loadContent("");
-//                    break;
-//                case PAUSED:
-//                    break;
-//            }
-//        }else{
-//            Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
-//        }
-//    }
-
-    public void showRenderedText(){ // Hides plain text editor and renders/shows WebView
+    private void showRenderedText(){ // Hides plain text editor and renders/shows WebView
         if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
             //System.out.println(markdownToHTML(tabContent));
             //webEngine.loadContent(tabContent);
             //webEngine.load(pathToURL(getNoteFolderPath())); // todo: THERE IS A BUG IN JDK 11 WITH THIS TO ALWAYS THROW AN SSLException. JUST WORK AROUND IT
             //System.out.println(pathToURL(getNoteFolderPath()));
+
             switch(renderType){
                 case BOTH:
                     webEngine.loadContent(markdownToHTML(tabContent) + scriptTags()); // has to parse the html from markdown first, then split the tags
@@ -435,6 +405,7 @@ public class ViewController extends InfoHelper implements Initializable {
         }else{
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
         }
+
         /*
         WebEngine htmlEngine = (((WebView) ((ScrollPane) tmp.getContent()).getContent()).getEngine()); // finds the webengine in the corresponding scrollpane/webview
         htmlEngine.loadContent("<b>biggie cheese</b>");
@@ -442,10 +413,10 @@ public class ViewController extends InfoHelper implements Initializable {
 
     }
 
-    public Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
-    public boolean tabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
+    private Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
+    private boolean tabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
 
-    public File openFileChooser(String title, String type, String initialFileName){
+    private File openFileChooser(String title, String type, String initialFileName){
         fc.setTitle(title);
         fc.setInitialFileName(initialFileName);
         fc.setInitialDirectory(new File(getNoteFolderPath()));
@@ -455,18 +426,17 @@ public class ViewController extends InfoHelper implements Initializable {
             case "open":
                 return fc.showOpenDialog(null);
             default:
-                System.out.println("uuuuh you made a typo in the function call");
+                System.out.println("Error: typo in function call");
         }
         return new File(getNoteFolderPath());
     }
 
-    public String markdownToHTML(String markdown){ // code from flexmark github homepage
+    private String markdownToHTML(String markdown){ // code from flexmark github homepage
         Node doc = parser.parse(markdown);
         return model.parseTextForTags(renderer.render(doc));
-    } // the code must manually place line breaks (<br>) for tags.
-    // commonmark markdown does not support soft line breaks as <br>
+    }
 
-    public void createNewNote(String content, String title){ // for when a specified file is requested to be opened
+    private void createNewNote(String content, String title){ // for when a specified file is requested to be opened
         Tab newTab = new Tab(title);
         TextArea newTabTxt = new TextArea();
         newTabTxt.setFont(Font.font("Consolas", FontWeight.NORMAL, 12));
@@ -487,7 +457,7 @@ public class ViewController extends InfoHelper implements Initializable {
         });
     }
 
-    public void closeTab() {
+    void closeTab() {
         tabPane.getTabs().remove(tabPane.getSelectionModel().getSelectedItem());
         if(tabPaneIsEmpty()){
             menuBtnSave.setDisable(true);
@@ -532,7 +502,7 @@ public class ViewController extends InfoHelper implements Initializable {
             menuBtnSyncFiles.setDisable(true);
             menuBtnDownloadFiles.setDisable(true);
             menuBtnUnlinkDbxAcc.setDisable(true);
-            menuBtnAuthDropbox.setDisable(true);
+            //menuBtnAuthDropbox.setDisable(true);
         }
 
         tabPane.getSelectionModel().selectedItemProperty().addListener( // change listener to detect a tab selection change
@@ -634,7 +604,6 @@ public class ViewController extends InfoHelper implements Initializable {
         });
     }
 }
-
 /*
 TODO: start server: get("/hello", (req, res) -> "Hello World");
 TODO: stop server: stop();

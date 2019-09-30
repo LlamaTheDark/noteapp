@@ -19,8 +19,8 @@ public class DownloadTask extends Task {
     protected Object call() throws Exception {
         File dir = new File(ih.getNoteFolderPath());
         File[] localFiles = dir.listFiles();
-        int totalFiles = localFiles.length;
-        int uploadedFIles = 0;
+        int totalFiles = getFolderMetaData().size();
+        int downloadedFiles = 0;
 
         this.updateMessage("Syncing from dropbox: DO NOT SHUTDOWN");
 
@@ -33,24 +33,30 @@ public class DownloadTask extends Task {
                 }
             }
             if(!existsOnDropbox){
-                this.updateMessage("Deleting " + f.getName() + " from Dropbox...");
+                this.updateMessage("Deleting local file " + f.getName() + " ...");
                 if(deleteLocalFile(f.getAbsolutePath())){
                     this.updateMessage(f.getName() + " successfully deleted.");
                 }
             }
         }
-
         for (File f : localFiles){
             for(Metadata dbxF : Objects.requireNonNull(getFolderMetaData())){
+                System.out.println(f.getName() + ", "+ dbxF.getName());
                 if (f.getName().equals(dbxF.getName())){
                     this.updateMessage("Locally overwriting: " + f.getName());
                     if(deleteLocalFile(f.getAbsolutePath())){
                         if(downloadFile(f)){
                             this.updateMessage("Successfully overwritten: " + f.getName());
-                        } // the File object should still exist so it will be fine.
-                    }else{
-                        this.updateMessage("ERROR: Could not delete file;");
-                    }
+                            downloadedFiles++;
+                            this.updateProgress((double)downloadedFiles, (double)totalFiles);
+                        }// the File object should still exist so it will be fine.
+                    }/*else{
+                        //this.updateMessage("ERROR: Could not delete file.");
+                    }*/
+                }else if(downloadFile(new File(ih.getNoteFolderPath() + "\\" + dbxF.getName()))){
+                    this.updateMessage("Successfully downloaded: " + f.getName());
+                    downloadedFiles++;
+                    this.updateProgress((double)downloadedFiles, (double)totalFiles);
                 }
             }
         }
@@ -58,7 +64,7 @@ public class DownloadTask extends Task {
         return null;
     }
 
-    public DownloadTask(DbxClientV2 client){
+    DownloadTask(DbxClientV2 client){
         this.client = client;
     }
 

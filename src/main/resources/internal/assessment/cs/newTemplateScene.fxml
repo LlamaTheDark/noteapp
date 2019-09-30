@@ -9,7 +9,7 @@
 
 <!-- YOU DO NOT SPECIFY A CONTROLLER HERE BECAUSE YOU HAVE TO USE THE CONSTRUCTOR TO GIVE IT THE FILENAME INFORMATION -->
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="289.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="289.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" >
    <children>
       <TextField fx:id="txtName" layoutX="17.0" layoutY="182.0" promptText="example name" AnchorPane.bottomAnchor="46.0" AnchorPane.leftAnchor="17.0" AnchorPane.rightAnchor="133.0" />
       <Text fx:id="txtPrompt" layoutX="18.0" layoutY="63.73876953125" strokeType="OUTSIDE" strokeWidth="0.0" text="What would you like to call the template?" wrappingWidth="142.986328125" AnchorPane.bottomAnchor="84.1279296875" AnchorPane.leftAnchor="18.0" AnchorPane.rightAnchor="128.013671875" AnchorPane.topAnchor="47.3720703125">

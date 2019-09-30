@@ -24,7 +24,7 @@ public class NewTemplateController extends InfoHelper implements Initializable {
 
     private String filename;
 
-    public NewTemplateController (String filename){
+    NewTemplateController(String filename){
         this.filename = filename;
     }
 
@@ -41,15 +41,18 @@ public class NewTemplateController extends InfoHelper implements Initializable {
         close();
     }
 
-    public void close(){
+    private void close(){
         ((Stage)btnCancel.getScene().getWindow()).close();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         FileHelper currentFile = new FileHelper(getNoteFolderPath() + "\\" + filename);
-        lstvwTags.getItems().addAll(currentFile.searchFileForTags());
+        try {
+            lstvwTags.getItems().addAll(currentFile.searchFileForTags());
+        }catch(NullPointerException e){
 
+        }
         btnFinish.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

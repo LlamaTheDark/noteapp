@@ -1,33 +1,26 @@
 package internal.assessment.cs;
 
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 //javafx imports
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class Main extends Application {
 
     public static void main(String[] args) {
-        File tmp = new File("C:\\NoteAppData"); // creates a set place for files to be stored TODO: maybe find a way to let the user change this??
+/*
+        File tmp = new File("C:\\NoteAppData"); // creates a set place for files to be stored
                                                          // allows for non-volatile information storage
         FileHelper fhInfo = new FileHelper(tmp.getPath() + "\\info.json");
         FileHelper fhTemplates = new FileHelper(tmp.getPath() + "\\templates.json");
@@ -39,7 +32,6 @@ public class Main extends Application {
             jsonINFO.put("accessToken", "");
             jsonINFO.put("tags", new JSONArray());
             fhInfo.writeFile(jsonINFO.toJSONString());
-
 
             JSONObject templates = new JSONObject();
             JSONArray exampleTemplate = new JSONArray();
@@ -54,6 +46,43 @@ public class Main extends Application {
         }
 
         launch(args);
+*/
+        SMStorageProtocol test = new SMStorageProtocol();
+
+        test.put("testItem", "check 123");
+
+        SMArrayItem SMArray = new SMArrayItem();
+        SMArray.add("number one", "1");
+        SMArray.add("number two", "2");
+        SMArray.add("number three", "penis haha");
+
+        test.put("testArray", SMArray);
+        test.put("testFriend", "testValue");
+
+        test.put("testArray", "balls");
+
+        //System.out.println("\n\n\n" + test.toString());
+        //System.out.println(SMArray.toString());
+
+
+        SMStorageProtocol SMSP = SMStorageProtocol.parseStringToSMSP(">testboi=cheese>eatmyballs=poop>whatareyou=what>arr=[whatwhat=12,whatwho=5]>lastone=nice");
+
+        System.out.println("1. " + SMSP);
+        SMSP.put("testboi", "whom'st");
+        System.out.println("2. " + SMSP);
+        SMSP.remove("testboi");
+        System.out.println("3. " + SMSP);
+
+        SMStringItem eatMyBalls = (SMStringItem)SMSP.get("eatmyballs");
+        System.out.println("4. eatMyBalls: " + eatMyBalls.getValue());
+
+        SMArrayItem array = (SMArrayItem)SMSP.get("arr");
+
+        array.remove("whatwhat");
+        SMSP.put("arr", array);
+
+        System.out.println("5. " + SMSP);
+
 /*
         DropboxHelper dh = new DropboxHelper();
         dh.uploadFile();

@@ -10,14 +10,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 
 public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFORE SYNC WILL WORK OR FIX THAT PROBLEM
 
     private InfoHelper ih = new InfoHelper();
     private DbxClientV2 client;
 
-    public UploadTask(DbxClientV2 client){
+    UploadTask(DbxClientV2 client){
         this.client = client;
     }
 
@@ -38,7 +37,7 @@ public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFOR
         //      if it's not, delete it from dropbox. (only do this if you are updating the local library with dropbox upon launching the application)
         // }
 
-        // first deletes all files not existing locally.
+        // first deletes all files in dropbox that don't existing locally.
         boolean existsLocally;
         for (Metadata m : getDropboxFiles()){
             existsLocally = false;
@@ -70,7 +69,7 @@ public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFOR
         return null;
     }
 
-    public boolean uploadFile(File f){ // returns success state;
+    private boolean uploadFile(File f){ // returns success state;
         try (InputStream in = new FileInputStream(f.getAbsolutePath())) {
             FileMetadata metadata = client.files().uploadBuilder("/myNotesFolder/" + f.getName())
                     .uploadAndFinish(in);
@@ -81,7 +80,7 @@ public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFOR
         return true;
     }
 
-    public boolean fileExistsInDropbox(File f){
+    private boolean fileExistsInDropbox(File f){
         try {
             client.files().getMetadata("/myNotesFolder/" + f.getName());
         } catch (GetMetadataErrorException e){
@@ -97,17 +96,15 @@ public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFOR
         return true;
     }
 
-    public boolean deleteDropboxFile(String filename){
+    private void deleteDropboxFile(String filename){
         try {
             DeleteResult metadata = client.files().deleteV2("/myNotesFolder/" + filename);
         } catch (DbxException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
-    public List<Metadata> getDropboxFiles(){
+    private List<Metadata> getDropboxFiles(){
         ListFolderResult metadata;
         try {
             metadata = client.files().listFolder("/myNotesFolder/");

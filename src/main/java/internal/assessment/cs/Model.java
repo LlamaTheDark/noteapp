@@ -11,14 +11,14 @@ public class Model {
     public static void main(String[] args){
 
     }
-    public String stringArrToString(String[] arr){
+    String stringArrToString(String[] arr){
         String str = "";
         for (String a: arr){
             str += a + "\n";
         }
         return str;
     }
-    public String[] shortenStringArrToIndex(String[] arr, int i){ // index 'i' starts at 0
+    String[] shortenStringArrToIndex(String[] arr, int i){ // index 'i' starts at 0
         String[] newArr = new String[i];
         for (int j = 0; j < i; j++){
             newArr[j] = arr[j];
@@ -26,19 +26,19 @@ public class Model {
         return newArr;
     }
 
-    public static void showErrorMsg(String error, String subError){ //Uses an Alert object to create an error message
+    static void showErrorMsg(String error, String subError){ //Uses an Alert object to create an error message
         Alert errorMsg = new Alert(Alert.AlertType.ERROR);
         errorMsg.setHeaderText(error);
         errorMsg.setContentText(subError);
         errorMsg.showAndWait();
     }
-    public static void showInformationMsg(String information, String subText){
+    static void showInformationMsg(String information, String subText){
         Alert informationMsg = new Alert(Alert.AlertType.INFORMATION);
         informationMsg.setHeaderText(information);
         informationMsg.setContentText(subText);
         informationMsg.showAndWait();
     }
-    public static boolean showConfirmationMsg(String header, String content){
+    static boolean showConfirmationMsg(String header, String content){
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setHeaderText(header);
         confirmation.setContentText(content);
@@ -50,22 +50,22 @@ public class Model {
         return "";
     }
 
-    public static String getSurroundingText(String[] arr, int lowerIndex, int upperIndex) { // the two ints describe the start and end of the phrase
-        String surroundingText = "";
-        int lowerLimit = lowerIndex, upperLimit = upperIndex;
-        while(lowerLimit-1 >= 0 && lowerIndex-lowerLimit < 10) {
-            lowerLimit--;
+    static String getSurroundingText(String[] arr, int lowerIndex, int upperIndex) { // the two ints describe
+        String surroundingText = "";                                                 // the start and end of
+        int lowerLimit = lowerIndex, upperLimit = upperIndex;                        // the phrase
+        while(lowerLimit-1 >= 0 && lowerIndex-lowerLimit < 10) { // gets the lowest possible
+            lowerLimit--;                                        // positive index that is within 10 indices
         }
-        while(upperLimit+1 <= arr.length && upperLimit-upperIndex < 10) {
-            upperLimit++;
+        while(upperLimit+1 <= arr.length && upperLimit-upperIndex < 10) { // gets highest possible
+            upperLimit++;                                                 //  positive index within 10 indices
         }
-        for (int i = lowerLimit; i <= upperLimit-1; i++) {
-            surroundingText += arr[i];
+        for (int i = lowerLimit; i <= upperLimit-1; i++) { // adds all text in between two indices to the
+            surroundingText += arr[i];                     // value to be returned
         }
         return surroundingText;
     }
 
-    public static int[] getTagLimits(String tag, String[] text){
+    static int[] getTagLimits(String tag, String[] text){
 
         boolean endTagExists = false;
         if (tag.equals("")){
@@ -81,7 +81,7 @@ public class Model {
 
         try {
             while(!splitText[limits[0]][0].equals("#" + tag + "#")) {  // searches for the tag format #abc# and for the next blank line after that.
-                if (splitText[limits[0]][0].equals("#/" + tag + "#")){ // the algorithm starts from the end of the doc to efficiency
+                if (splitText[limits[0]][0].equals("#/" + tag + "#")){ // the algorithm starts from the end of the doc to maximize efficiency
                     limits[1] = limits[0];
                     endTagExists = true;
                 } else if(splitText[limits[0]].length-1==0 && !endTagExists) { // isEndTagFound allows the algorithm to say "stop searching for
@@ -103,7 +103,7 @@ public class Model {
 //        return content.replaceAll(text, "<mark>" + text + "</mark>");
 //    }
 
-    public String arrayToString(String[] arr) {
+    String arrayToString(String[] arr) {
         String toString = "";
         for (String a: arr) {
             toString+=a;
@@ -134,7 +134,7 @@ public class Model {
         return false;
     }
 
-    public String parseTextForTags(String text){
+    String parseTextForTags(String text){
         String[] splitArr = text.split("((?<=#)|(?=#))");
         String[] tmp;
 
@@ -157,4 +157,11 @@ public class Model {
         return text;
     }
 
+
+    static String[] getNameAndValue(String text){ // should get a string in the form "name=value" or "name=value]"
+        String[] nv = text.split("=");
+        nv[1] = nv[1].replaceAll("\\]|\n|\r|\t", "");
+
+        return nv;
+    }
 }

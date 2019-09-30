@@ -1,19 +1,19 @@
 package internal.assessment.cs;
 
 public class MatchList {
-    Node head;
-    String filename;
+    private Node head;
+    private String filename;
     private int length = 0;
 
-    public int getLength() {return length;}
+    int getLength() {return length;}
 
     public MatchList(Node head) { this.head = head; length++; }
-    public MatchList(String filename) {this.filename = filename;}
+    MatchList(String filename) {this.filename = filename;}
 
-    public String getFilename(){ return filename;}
+    String getFilename(){ return filename;}
 
-    public void addNode(Node node) {
-        if (!isEmpty()) {
+    void addNode(Node node) {
+        if (isNotEmpty()) {
             Node tmp = new Node();
             tmp.next = head;
             while(tmp.next.next!=null) {
@@ -25,12 +25,14 @@ public class MatchList {
         }
         length++;
     }
-    public Node newNode(String sampleText, int lineNum) { return new Node(sampleText, lineNum); }
-
-    private boolean isEmpty() {return head==null;}
+    Node newNode(String sampleText, int lineNum) { return new Node(sampleText, lineNum); }
+    private boolean isNotEmpty() {return head != null;}
+    String toSearchResult(int index){
+        return "In \'" + getFilename() + "\', line " + getLineNum(index) + ": \"..." + getSampleText(index) + "...\"";
+    }
 
     public void printList() {
-        if (!isEmpty()) {
+        if (isNotEmpty()) {
             Node tmp = head;
             System.out.println("In file at " + filename);
             System.out.print("Line number:\t" + tmp.getLineNum() + "\nSample Text:\t..." + tmp.getSampleText() + "...\n\n");
@@ -42,13 +44,9 @@ public class MatchList {
         System.out.println("-------------------------------------------------------------------------------\n");
     } // this was solely for development purposes
 
-    public String toSearchResult(int index){
-        return "In \'" + getFilename() + "\', line " + getLineNum(index) + ": \"..." + getSampleText(index) + "...\"";
-    }
-
-    public String getSampleText(int index){
+    private String getSampleText(int index){
         int i = 0;
-        if (!isEmpty()){
+        if (isNotEmpty()){
             Node tmp = new Node();
             tmp.next = head;
             while(tmp.next.next!=null && i != index){ // if index is longer than the list it will return the last value
@@ -60,9 +58,9 @@ public class MatchList {
             return "This array is empty.";
         }
     }
-    public int getLineNum(int index){
+    private int getLineNum(int index){
         int i = 0;
-        if (!isEmpty()){
+        if (isNotEmpty()){
             Node tmp = new Node();
             tmp.next = head;
             while(tmp.next.next!=null && i != index){ // if index is longer than the list it will return the last value
@@ -81,18 +79,17 @@ class Node{
     private int lineNum;
     Node next;
 
-    public Node(String sampleText, int lineNum) {
+    Node(String sampleText, int lineNum) {
         this.sampleText = sampleText;
         this.lineNum = lineNum;
     }
-    public Node(){}
+    Node(){}
 
-    public String getSampleText() { return sampleText;}
-    public void setSampleText(String sampleText) {this.sampleText = sampleText;}
-
-    public int getLineNum() {return lineNum;}
-    public void setLineNum(int lineNum) {this.lineNum = lineNum;}
-
+    String getSampleText() { return sampleText;}
+    int getLineNum() {return lineNum;}
+}
+/*
     public Node getNext() {return next;}
     public void setNext(Node next) {this.next = next;}
-}
+
+ */

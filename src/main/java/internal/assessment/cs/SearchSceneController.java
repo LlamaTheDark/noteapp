@@ -30,7 +30,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
     public Button btnCancel;
     public TextField txtKeyphrase;
     public Text txtAlert;
-    int numResults;
+    private int numResults;
 
     private LinkedList<String> resultsFileNames = new LinkedList<>();
 
@@ -83,6 +83,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
     }
 
     public void handleMouseClickAction(MouseEvent mouseEvent) {
+        btnEdit.setDisable(false);
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
                 && mouseEvent.getClickCount()==2
         ){
@@ -101,7 +102,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
         }
     }
 
-    public void closeWindow(){
+    private void closeWindow(){
         ((Stage)btnCancel.getScene().getWindow()).close();
     }
 

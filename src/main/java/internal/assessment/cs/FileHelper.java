@@ -10,22 +10,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class FileHelper {
+class FileHelper {
 
-    Model model = new Model();
-    JSONParser parser = new JSONParser();
+    private Model model = new Model();
+    private JSONParser parser = new JSONParser();
 
-    final String WITH_DELIMITERS = "\\t|,|;|!|-|:|@|_|\\*|/";
+    private final String WITH_DELIMITERS = "\\t|,|;|!|-|:|@|_|\\*|";
 
-    final String FILEPATH; // each FileHelper class is specific to one file.
+    private final String FILEPATH; // each FileHelper class is specific to one file.
     // Thus, the FILEPATH variable is final and cannot be
     // changed after instantiation in the constructor
 
-    public FileHelper(String filePath){
+    FileHelper(String filePath){
         FILEPATH = filePath; // File name is instantiated specific to each object
     }
 
-    public String[] readFileToArr(){ // will return a single string file read from a document with each line separation shown through '\n'
+    String[] readFileToArr(){ // will return a single string file read from a document with each line separation shown through '\n'
         String[] fileRead = new String[500]; // fileRead file is the string containing the read file to be returned by the readFileToArr() method.
         int count = 0;
         String line;   // will be set equal to each line to append to fileRead and test for the end of the document
@@ -43,8 +43,8 @@ public class FileHelper {
         catch (IOException e){System.out.println("Error reading file"  + "\'" + (new File(FILEPATH).getName()) + "\'");}
         return model.shortenStringArrToIndex(fileRead, count); // returns the final output of the read string in array form
     }
-    public String readFileToStr(){
-        String fileRead = ""; // fileRead file is the string containing the read file to be returned by the readFileToArr() method.
+    String readFileToStr(){
+        String fileRead = ""; // fileRead file is the final output value (the read string)
         int count = 0;
         String line;   // will be set equal to each line to append to fileRead and test for the end of the document
         try{
@@ -61,7 +61,7 @@ public class FileHelper {
         catch (IOException e){System.out.println("Error reading file"  + "\'" + (new File(FILEPATH).getName()) + "\'");}
         return fileRead;
     }
-    public JSONObject readToJSONObj(){
+    JSONObject readToJSONObj(){
         try {
             return (JSONObject) parser.parse(model.arrayToString(readFileToArr()));
         } catch (ParseException e) {
@@ -70,11 +70,11 @@ public class FileHelper {
         return new JSONObject();
     }
 
-    public boolean deleteFile(){
+    boolean deleteFile(){
         return ((new File(FILEPATH)).delete());
     }
 
-    public void writeToFile(String fileContent){ // will replace the specified file's content with the String passed
+    void writeToFile(String fileContent){ // will replace the specified file's content with the String passed
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(FILEPATH));
             writer.write(fileContent);
@@ -83,7 +83,7 @@ public class FileHelper {
             System.out.println("Could not write to file. Invalid path.");
         }
     }
-    public void writeFile(String fileContent){ // will create a new file with the specified file content
+    void writeFile(String fileContent){ // will create a new file with the specified file content
         try {
             File f = new File(FILEPATH);
             f.createNewFile();
@@ -95,7 +95,7 @@ public class FileHelper {
         }
     }
 
-    public MatchList searchFileForPhraseByTag(String keyphrase, String tag) {
+    MatchList searchFileForPhraseByTag(String keyphrase, String tag) {
         MatchList ml = new MatchList(new File(FILEPATH).getName());
 
         boolean isMatch;
@@ -104,43 +104,43 @@ public class FileHelper {
         String[][] splitText = new String[text.length][0];
         for (int i = 0; i < text.length; i++) {
             text[i] = text[i].replaceAll(WITH_DELIMITERS, "");
-            splitText[i] = text[i].split("");
+            splitText[i] = text[i].split(""); // splits the whole text into each individual letter
         }
 
 
-        String[] splitKeyphrase = keyphrase.split("");
+        String[] splitKeyphrase = keyphrase.split(""); // splits entire keyphrase into each individual letter.
 
-        for (int i = limits[0]; i <= limits[1]; i++) {
-            for (int j = 0; j < splitText[i].length - 1; j++) {
+        for (int i = limits[0]; i <= limits[1]; i++) { // searches from the lower index to the upper index
+            for (int j = 0; j < splitText[i].length - 1; j++) { // for each line, it searches each letter
                 isMatch = true;
-                int keyPhraseCount = 0;
-                int tmpCount = j;
+                int keyPhraseIndex = 0; // to keep track of matched letters in a row (index of the keyphrase)
+                int lineIndex = j; // to keep track of the index within the line
 
-                while (keyPhraseCount <= splitText[i].length - 1
-                        && keyPhraseCount <= splitKeyphrase.length - 1
-                        && tmpCount <= splitText[i].length - 1
-                        && isMatch) {
-                    if (!splitKeyphrase[keyPhraseCount].toLowerCase().equals(splitText[i][tmpCount].toLowerCase())) {
-                        isMatch = false;
-                    } else {
-                        keyPhraseCount++;
-                        tmpCount++;
+                while (keyPhraseIndex <= splitText[i].length - 1
+                        && keyPhraseIndex <= splitKeyphrase.length - 1
+                        && lineIndex <= splitText[i].length - 1
+                        && isMatch) { // makes sure everything is within the bounds and that there is still a match to be had
+                    if (!splitKeyphrase[keyPhraseIndex].toLowerCase().equals(splitText[i][lineIndex].toLowerCase())) {
+                        isMatch = false; // if the letter in the keyphrase doesn't match the letter of the line (at the same
+                    } else {             // index relative to j, then there cannot be a match for this increment of j.
+                        keyPhraseIndex++;// otherwise, the letters match and the next letters in the line can be tested
+                        lineIndex++;
                     }
                 }
-                if (keyPhraseCount == splitKeyphrase.length && keyPhraseCount != 0) {
-                    //System.out.println(Model.getSurroundingText(splitText[i], j, j + splitKeyphrase.length - 1));
-                    ml.addNode(ml.newNode(
+                if (keyPhraseIndex == splitKeyphrase.length && keyPhraseIndex != 0) { // if the keyPhraseIndex got to the end
+                    ml.addNode(ml.newNode(                                            // of the keyword, it is a match
                             Model.getSurroundingText(
                                     splitText[i],
                                     j,
                                     j + splitKeyphrase.length - 1),
-                            i + 1));
+                            i + 1
+                    ));
                 }
             }
         }
         return ml;
     }
-    public LinkedList<String> searchFileForTags(){
+    LinkedList<String> searchFileForTags(){
         LinkedList<String> tagsInFile = new LinkedList<>();
         String stringFile = readFileToStr();
         Pattern p = Pattern.compile("#([a-zA-Z0-9_ ']+)#"); // https://regex101.com/ is a lifesaver
@@ -153,7 +153,7 @@ public class FileHelper {
         return tagsInFile;
 
     }
-    public boolean containsTag(String tag){
+    boolean containsTag(String tag){
         return readFileToStr().contains("#" + tag + "#");
     }
 }

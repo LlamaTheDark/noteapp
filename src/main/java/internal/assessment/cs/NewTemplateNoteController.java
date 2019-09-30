@@ -32,7 +32,7 @@ public class NewTemplateNoteController extends InfoHelper implements Initializab
         close();
     }
 
-    public void close(){
+    private void close(){
         ((Stage)btnCancel.getScene().getWindow()).close();
     }
 
@@ -48,7 +48,7 @@ public class NewTemplateNoteController extends InfoHelper implements Initializab
         }
     }
 
-    public void reloadListView(){
+    private void reloadListView(){
         lstvwTemplates.getItems().clear();
         FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
         JSONObject jsonTemplates = templatesFile.readToJSONObj();

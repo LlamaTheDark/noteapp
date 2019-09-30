@@ -36,7 +36,7 @@ public class AuthorizeDropboxController extends DropboxHelper implements Initial
         cancel();
     }
 
-    public void cancel(){
+    private void cancel(){
         ((Stage)btnDone.getScene().getWindow()).close();
     }
 
