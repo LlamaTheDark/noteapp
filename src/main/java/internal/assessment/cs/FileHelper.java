@@ -57,13 +57,15 @@ class FileHelper {
             }
             bufferedReader.close(); // closes the bufferedReader
         }
-        catch (FileNotFoundException a){System.out.println("Could not find file " + "\'" + (new File(FILEPATH).getName()) + "\'");} // catches potential errors
+        catch (FileNotFoundException a){
+            System.out.println("Could not find file " + "\'" + (new File(FILEPATH).getName()) + "\'");
+        } // catches potential errors
         catch (IOException e){System.out.println("Error reading file"  + "\'" + (new File(FILEPATH).getName()) + "\'");}
         return fileRead;
     }
     JSONObject readToJSONObj(){
         try {
-            return (JSONObject) parser.parse(model.arrayToString(readFileToArr()));
+            return (JSONObject) parser.parse(readFileToStr());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -140,19 +142,17 @@ class FileHelper {
         }
         return ml;
     }
-    LinkedList<String> searchFileForTags(){
+    LinkedList<String> searchForTags() {
         LinkedList<String> tagsInFile = new LinkedList<>();
         String stringFile = readFileToStr();
         Pattern p = Pattern.compile("#([a-zA-Z0-9_ ']+)#"); // https://regex101.com/ is a lifesaver
         Matcher tagMatch = p.matcher(stringFile);
-
         while(tagMatch.find()){
             tagsInFile.add(tagMatch.group(1));
         }
-
         return tagsInFile;
-
     }
+
     boolean containsTag(String tag){
         return readFileToStr().contains("#" + tag + "#");
     }

@@ -18,6 +18,8 @@ import org.json.simple.JSONObject;
 
 public class Main extends Application {
 
+    public String rootDir = getRootDir();
+
     public static void main(String[] args) {
 
         File tmp = new File("C:\\NoteAppData"); // creates a set place for files to be stored
@@ -27,24 +29,7 @@ public class Main extends Application {
 
         if (!tmp.exists()){
             tmp.mkdir();
-            SMStorageProtocol SMSPInfo = new SMStorageProtocol();
-            SMSPInfo.put("noteFolderPath", "C:\\");
-            SMSPInfo.put("accessToken", "");
-            SMSPInfo.put("tags", new SMArrayItem());
-            fhInfo.writeFile(SMSPInfo.toString());
 
-            SMStorageProtocol SMSPTemplates = new SMStorageProtocol();
-            SMArrayItem exampleTemplate = new SMArrayItem();
-            SMArrayItem templateNames = new SMArrayItem();
-            templateNames.add("example template", "");
-            exampleTemplate.add("description", "");
-            exampleTemplate.add("mathematics", "");
-            exampleTemplate.add("date", "");
-            SMSPTemplates.put("example template", exampleTemplate);
-            SMSPTemplates.put("Template Names", templateNames);
-            fhTemplates.writeFile(SMSPTemplates.toString());
-
-            /*
             JSONObject jsonINFO = new JSONObject();
             jsonINFO.put("noteFolderPath", "C:\\");
             jsonINFO.put("accessToken", "");
@@ -61,52 +46,10 @@ public class Main extends Application {
             templates.put("example template", exampleTemplate);
             templates.put("Template Names", templateNames);
             fhTemplates.writeFile(templates.toJSONString());
-             */
+
         }
 
         launch(args);
-/*
-        SMStorageProtocol test = new SMStorageProtocol();
-
-        test.put("testItem", "check 123");
-
-        SMArrayItem SMArray = new SMArrayItem();
-        SMArray.add("number one", "1");
-        SMArray.add("number two", "2");
-        SMArray.add("number three", "penis haha");
-
-        test.put("testArray", SMArray);
-        test.put("testFriend", "testValue");
-
-        test.put("testArray", "balls");
-
-        //System.out.println("\n\n\n" + test.toString());
-        //System.out.println(SMArray.toString());
-
-/*
-
-        SMStorageProtocol SMSP = SMStorageProtocol.parseStringToSMSP(">testboi=cheese>eatmyballs=poop>whatareyou=what>arr=[whatwhat=12,whatwho=5]>lastone=nice");
-
-        System.out.println("1. " + SMSP);
-        SMSP.put("testboi", "whom'st");
-        System.out.println("2. " + SMSP);
-        SMSP.remove("testboi");
-        System.out.println("3. " + SMSP);
-
-        SMStringItem eatMyBalls = (SMStringItem)SMSP.get("eatmyballs");
-        System.out.println("4. eatMyBalls: " + eatMyBalls.getValue());
-
-        SMArrayItem array = (SMArrayItem)SMSP.get("arr");
-
-        array.remove("whatwhat");
-        SMSP.put("arr", array);
-
-        System.out.println("5. " + SMSP);
-
-/*
-        DropboxHelper dh = new DropboxHelper();
-        dh.uploadFile();
-*/
     }
 
     @Override
@@ -142,22 +85,42 @@ public class Main extends Application {
                  ){
                     controller.handleNewTemplateFromNoteAction(new ActionEvent());
                  }
-                 else if(event.getCode()==KeyCode.S && event.isControlDown()){ // save file
+                 else if(event.getCode()==KeyCode.S // save file
+                         && event.isControlDown()
+                 ){
                     controller.handleSaveFileAction(new ActionEvent());
                  }
-                 else if(event.getCode()==KeyCode.W && event.isControlDown()){ // close window
+                 else if(event.getCode()==KeyCode.W // close window
+                         && event.isControlDown()
+                 ){
                     controller.closeTab();
                  }
-                 else if (event.getCode() == KeyCode.Q && event.isControlDown()) { // close main application
+                 else if (event.getCode() == KeyCode.Q // close main application
+                         && event.isControlDown()
+                 ){
                     controller.handleExitApplicationAction(new ActionEvent());
                  }
-                 else if(event.getCode() == KeyCode.N && event.isControlDown()){ // create new blank note
-                    controller.handleCreateNewNoteAction(new ActionEvent());
+                 else if(event.getCode() == KeyCode.N // create new blank note
+                         && event.isControlDown()
+                 ){
+                     controller.handleCreateNewNoteAction(new ActionEvent());
                  }
-
+                 else if(event.getCode() == KeyCode.O // bring up open file window
+                         && event.isControlDown()
+                 ){
+                     controller.handleOpenFileAction(new ActionEvent());
+                 }
 
             }
         }); // key pressed events (e.g. ctrl+S -> save file)
+    }
+
+    private String getRootDir(){
+        String systemRoot = System.getenv("SystemDrive");
+        if(systemRoot!=null){
+            return systemRoot;
+        }
+        return "/";
     }
 }
 

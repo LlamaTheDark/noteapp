@@ -114,8 +114,8 @@ public class SearchSceneController extends InfoHelper implements Initializable {
 
         for(File f : Objects.requireNonNull(new File(getNoteFolderPath()).listFiles())){ // TODO: you should maybe do this somewhere else...
             FileHelper fh = new FileHelper(f.getPath());
-            //System.out.println((fh.searchFileForTags()));
-            for (String tag : fh.searchFileForTags()){
+            //System.out.println((fh.searchForTags()));
+            for (String tag : fh.searchForTags()){
                 if(!tags.contains(tag)){
                     tags.add(tag);
                 }

@@ -9,9 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.net.URL;
-import java.util.EventListener;
 import java.util.ResourceBundle;
 
 public class NewTemplateController extends InfoHelper implements Initializable {
@@ -49,7 +47,7 @@ public class NewTemplateController extends InfoHelper implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         FileHelper currentFile = new FileHelper(getNoteFolderPath() + "\\" + filename);
         try {
-            lstvwTags.getItems().addAll(currentFile.searchFileForTags());
+            lstvwTags.getItems().addAll(currentFile.searchForTags());
         }catch(NullPointerException e){
 
         }

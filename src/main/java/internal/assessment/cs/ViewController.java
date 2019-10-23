@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import static spark.Spark.*;
 
@@ -354,7 +353,7 @@ public class ViewController extends InfoHelper implements Initializable {
                     JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
                     FileHelper templateFile = new FileHelper(getNoteFolderPath() + "\\" + getCurrentTab().getText());
                     JSONArray tags = new JSONArray();
-                    for (String tag : templateFile.searchFileForTags()){
+                    for (String tag : templateFile.searchForTags()){
                         tags.add(tag);
                     }
                     JSONArray templateNames = (JSONArray)jsonTemplates.get("Template Names");

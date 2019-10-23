@@ -28,4 +28,12 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web' ]
 }
 
-mainClassName = 'internal.assessment.cs.Main'
+//jar {
+//    manifest {
+//        attributes(
+//                'Main-Class': 'internal.assessment.cs.App'
+//        )
+//    }
+//}
+
+mainClassName = 'internal.assessment.cs.App'

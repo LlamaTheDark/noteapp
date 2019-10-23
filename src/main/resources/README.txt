@@ -1,24 +1,7 @@
 # WELCOME to the csia Note App
 ### Before you can sync files with Dropbox you must authorize your account through the 'Sync' menu.
 
-* Files will sync automatically from Dropbox upon launch (if there is wifi). ***no they will not***
 * You can manually sync up with Dropbox from the 'Sync' menu.
-
-## Supported Keyboard shortcuts:
-
-	Ctrl+S: Saves current file (will default to 'Save as'... if there is no existing file with that name.)
-
-	Ctrl+Shift+S: Brings up the 'Save as...' window.
-
-	Ctrl+W: Closes current tab.
-
-	Ctrl+Q: Closes the main application window.
-
-	Ctrl+N: Creates a new blank tab
-
-	Ctrl+Shift+T: Creates a new template from the current note
-
-	Ctrl+Shift+N: Creates a new tab from a selected template
 
 ## Markdown
 
@@ -59,7 +42,20 @@ If you have a group of tags you commonly use and don't want to write them out ev
 
 ### Also, feel free to adjust the bar in the middle to give more or less space to text editing.
 
+## Supported Keyboard shortcuts:
 
+	Ctrl+S: Saves current file (will default to 'Save as'... if there is no existing file with that name.)
 
+	Ctrl+Shift+S: Brings up the 'Save as...' window.
+
+	Ctrl+W: Closes current tab.
+
+	Ctrl+Q: Closes the main application window.
+
+	Ctrl+N: Creates a new blank tab
+
+	Ctrl+Shift+T: Creates a new template from the current note
+
+	Ctrl+Shift+N: Creates a new tab from a selected template
 
 
