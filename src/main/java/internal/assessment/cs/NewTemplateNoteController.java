@@ -40,7 +40,7 @@ public class NewTemplateNoteController extends InfoHelper implements Initializab
 
     public void handleDeleteTemplateAction(ActionEvent actionEvent) { // does not actually delete the template, just the availability
         if(lstvwTemplates.getSelectionModel().getSelectedItem()!=null){
-            FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+            FileHelper templatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
 /*
             SMStorageProtocol SMTemplates = SMStorageProtocol.parseStringToSMSP(templatesFile.readFileToStr());
             SMArrayItem SMTemplateNames = (SMArrayItem)SMTemplates.get("Template Names");
@@ -55,7 +55,6 @@ public class NewTemplateNoteController extends InfoHelper implements Initializab
             jsonTemplates.put("Template Names", templateNames);
             templatesFile.writeToFile(jsonTemplates.toJSONString());
             reloadListView();
-
         }
     }
 
@@ -66,7 +65,7 @@ public class NewTemplateNoteController extends InfoHelper implements Initializab
     }
     private void reloadListView(){
         lstvwTemplates.getItems().clear();
-        FileHelper templatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+        FileHelper templatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
 
         /*
         SMStorageProtocol SMTemplates = SMStorageProtocol.parseStringToSMSP(templatesFile.readFileToStr());

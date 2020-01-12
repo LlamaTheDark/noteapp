@@ -90,6 +90,7 @@
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.vladsch.flexmark/flexmark-ext-escaped-character/0.42.12/40870cdcad4a7b4555962e3bde6121a2eeffa4ab/flexmark-ext-escaped-character-0.42.12.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-io/9.3.2.v20150730/22bd4ad4856527847772f975a997f17da1e6766/jetty-io-9.3.2.v20150730.jar" path-in-jar="/" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/README.txt" />
     </root>
   </artifact>
 </component>

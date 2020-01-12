@@ -82,6 +82,7 @@ class FileHelper {
             writer.write(fileContent);
             writer.close();
         } catch (IOException e) {
+            System.out.println(FILEPATH);
             System.out.println("Could not write to file. Invalid path.");
         }
     }

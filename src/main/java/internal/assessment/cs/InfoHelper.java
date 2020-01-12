@@ -3,8 +3,8 @@ package internal.assessment.cs;
 import org.json.simple.JSONObject;
 
 class InfoHelper{
-    private String dataFolderPath = "C:\\NoteAppData";
-    private FileHelper fh = new FileHelper(dataFolderPath + "\\info.json");
+    private String dataFolderPath = "NoteAppData";
+    private FileHelper fh = new FileHelper(dataFolderPath + "/info.json");
 
     private static String tmpInfo;
     static String getTmpInfo() { return tmpInfo; }

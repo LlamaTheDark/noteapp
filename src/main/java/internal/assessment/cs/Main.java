@@ -16,22 +16,21 @@ import java.io.IOException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class Main extends Application {
+public class Main extends Application { // TODO: CHANGE ALL DIRECTORIES TO FIT WINDOWS, MAC OSX, AND LINUX
 
     public String rootDir = getRootDir();
 
     public static void main(String[] args) {
-
-        File tmp = new File("C:\\NoteAppData"); // creates a set place for files to be stored
-                                                         // allows for non-volatile information storage
-        FileHelper fhInfo = new FileHelper(tmp.getPath() + "\\info.sm");
-        FileHelper fhTemplates = new FileHelper(tmp.getPath() + "\\templates.sm");
+        File tmp = new File("NoteAppData"); // creates a set place for files to be stored
+                                                       // allows for non-volatile information storage
+        FileHelper fhInfo = new FileHelper(tmp.getPath() + "/info.json");
+        FileHelper fhTemplates = new FileHelper(tmp.getPath() + "/templates.json");
 
         if (!tmp.exists()){
             tmp.mkdir();
 
             JSONObject jsonINFO = new JSONObject();
-            jsonINFO.put("noteFolderPath", "C:\\");
+            jsonINFO.put("noteFolderPath", "/");
             jsonINFO.put("accessToken", "");
             jsonINFO.put("tags", new JSONArray());
             fhInfo.writeFile(jsonINFO.toJSONString());

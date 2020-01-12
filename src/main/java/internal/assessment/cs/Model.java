@@ -66,7 +66,7 @@ public class Model {
     }
 
     static int[] getTagLimits(String tag, String[] text){
-
+        
         boolean endTagExists = false;
         if (tag.equals("")){
             return new int[]{0, text.length-1};
@@ -77,7 +77,7 @@ public class Model {
         }
         int[] limits = new int[2]; // [0] is the upper limit, [1], is the lower limit
         limits[0] = text.length-1;
-        limits[1] = text.length-1; // the two limits will be the bounds by which the search will take place
+        limits[1] = text.length-1; // the two limits will be the bounds by which the search will be limited
 
         try {
             while(!splitText[limits[0]][0].equals("#" + tag + "#")) {  // searches for the tag format #abc# and for the next blank line after that.
@@ -95,7 +95,7 @@ public class Model {
             return new int[] {0, -1}; // won't search the file.
         }
         limits[0]++; // the upper limit for the tag (the point at which the search will start) must be appended by one as otherwise it will include the tag
-        // itself in the search
+                     // itself in the search
         return limits;
     }
 

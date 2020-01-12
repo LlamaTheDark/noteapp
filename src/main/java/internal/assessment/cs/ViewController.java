@@ -42,15 +42,15 @@ public class ViewController extends InfoHelper implements Initializable {
 
     private String scriptTags(){
         return "" + // adds mathJax to render sequence
-            "<script type=\"text/x-mathjax-config\">\n" +
-            "  MathJax.Hub.Config({\n" +
-            "    tex2jax: {\n" +
-            "      inlineMath: [ ['$','$'], [\"\\\\(\",\"\\\\)\"] ],\n" +
-            "      processEscapes: true\n" +
-            "    }\n" +
-            "  });\n" +
-            "</script>\n" +
-            "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n";
+                "<script type=\"text/x-mathjax-config\">\n" +
+                "  MathJax.Hub.Config({\n" +
+                "    tex2jax: {\n" +
+                "      inlineMath: [ ['$','$'], [\"\\\\(\",\"\\\\)\"] ],\n" +
+                "      processEscapes: true\n" +
+                "    }\n" +
+                "  });\n" +
+                "</script>\n" +
+                "<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>\n";
     }
 
     private Model model = new Model();
@@ -82,7 +82,7 @@ public class ViewController extends InfoHelper implements Initializable {
     public CheckMenuItem menuBtnBoolRenderMj;
     public CheckMenuItem menuBtnBoolRenderMd;
     public CheckMenuItem menuBtnBoolPauseRender;
-    //
+
     enum RenderType {
         NONE,
         TEXT,
@@ -91,6 +91,7 @@ public class ViewController extends InfoHelper implements Initializable {
         BOTH,
         PAUSED
     }
+    //
 
     private RenderType renderType = RenderType.MARKDOWN;
     private RenderType unPausedRender;
@@ -186,8 +187,8 @@ public class ViewController extends InfoHelper implements Initializable {
 
     public void handleSaveFileAction(ActionEvent actionEvent) {
         Tab tmp = getCurrentTab();
-        if(new File(getNoteFolderPath() + "\\" + tmp.getText()).exists()) { // if a file already exists then overwrite it
-            FileHelper fh = new FileHelper(getNoteFolderPath() + "\\" + tmp.getText());
+        if(new File(getNoteFolderPath() + "/" + tmp.getText()).exists()) { // if a file already exists then overwrite it
+            FileHelper fh = new FileHelper(getNoteFolderPath() + "/" + tmp.getText());
             fh.writeToFile(((TextArea) tmp.getContent()).getText());
         }else{
             handleSaveFileAsAction(new ActionEvent()); // if the file doesn't exist then go to 'save as...'
@@ -197,7 +198,7 @@ public class ViewController extends InfoHelper implements Initializable {
         Tab tmp = getCurrentTab();
         selectedFile = openFileChooser("Save as...", "save", tmp.getText()); // saves lines of code to use seperate method
         if (selectedFile != null){
-            FileHelper fh = new FileHelper(getNoteFolderPath() + "\\" + selectedFile.getName());
+            FileHelper fh = new FileHelper(getNoteFolderPath() + "/" + selectedFile.getName());
             fh.writeFile(((TextArea) tmp.getContent()).getText());
             tmp.setText(selectedFile.getName());
         }else{
@@ -215,11 +216,11 @@ public class ViewController extends InfoHelper implements Initializable {
     }
     public void handleDeleteFileAction(ActionEvent actionEvent) {
         if (!tabPaneIsEmpty()){
-//            System.out.println(getNoteFolderPath() + "\\" + getCurrentTab().getText());
+//            System.out.println(getNoteFolderPath() + "/" + getCurrentTab().getText());
             if (Model.showConfirmationMsg("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?",
                     "Press \'OK\' to confirm."
                     )) {
-                if((new FileHelper(getNoteFolderPath() + "\\" + getCurrentTab().getText())).deleteFile()){
+                if((new FileHelper(getNoteFolderPath() + "/" + getCurrentTab().getText())).deleteFile()){
                     Model.showInformationMsg("Success", getCurrentTab().getText() + " successfully deleted from directory path.");
                     tabPane.getTabs().remove(getCurrentTab());
                 }else{
@@ -239,7 +240,7 @@ public class ViewController extends InfoHelper implements Initializable {
             searchStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("searchScene.fxml")), 420, 465));
             searchStage.showAndWait();
             if(!getTmpInfo().equals("")){
-                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"\\"+ getTmpInfo())).readFileToArr()), getTmpInfo());
+                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"/"+ getTmpInfo())).readFileToArr()), getTmpInfo());
             }
         }catch(IOException e){
             e.printStackTrace();
@@ -302,13 +303,13 @@ public class ViewController extends InfoHelper implements Initializable {
     }
 
     public void handleOpenSparkServerAction(ActionEvent actionEvent) {
-        FileHelper fh = new FileHelper(getNoteFolderPath() + "\\index.html");
+        FileHelper fh = new FileHelper(getNoteFolderPath() + "/index.html");
         get("/csianoteapp", (req, res) -> fh.readFileToStr());
     }
     public void handleCloseSparkServerAction(ActionEvent actionEvent) { stop(); }
 
     public void handleShowAboutInfoAction(ActionEvent actionEvent) {
-        createNewNote((new FileHelper("src\\main\\resources\\README.txt")).readFileToStr(), "README.txt");
+        createNewNote((new FileHelper("README.txt")).readFileToStr(), "README.txt");
     }
     //functions called past this point are not called as a direct result of interaction with the GUI//
 
@@ -321,7 +322,7 @@ public class ViewController extends InfoHelper implements Initializable {
             newTemplateNoteStage.showAndWait();
             if(!getTmpInfo().equals("")){
                 String newNoteContent = "";
-                FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+                FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
                 JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
                 JSONArray tagsInTemplate = (JSONArray)jsonTemplates.get(getTmpInfo());
                 for (Object tag : tagsInTemplate){
@@ -349,9 +350,9 @@ public class ViewController extends InfoHelper implements Initializable {
                 newTemplateStage.setScene(new Scene(root, 289, 172));
                 newTemplateStage.showAndWait();
                 if(!getTmpInfo().equals("") ){
-                    FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "\\templates.json");
+                    FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
                     JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
-                    FileHelper templateFile = new FileHelper(getNoteFolderPath() + "\\" + getCurrentTab().getText());
+                    FileHelper templateFile = new FileHelper(getNoteFolderPath() + "/" + getCurrentTab().getText());
                     JSONArray tags = new JSONArray();
                     for (String tag : templateFile.searchForTags()){
                         tags.add(tag);

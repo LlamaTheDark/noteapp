@@ -41,7 +41,7 @@ public class DownloadTask extends Task {
         }
         for (File f : localFiles){
             for(Metadata dbxF : Objects.requireNonNull(getFolderMetaData())){
-                System.out.println(f.getName() + ", "+ dbxF.getName());
+                //System.out.println(f.getName() + ", "+ dbxF.getName());
                 if (f.getName().equals(dbxF.getName())){
                     this.updateMessage("Locally overwriting: " + f.getName());
                     if(deleteLocalFile(f.getAbsolutePath())){
@@ -53,7 +53,7 @@ public class DownloadTask extends Task {
                     }/*else{
                         //this.updateMessage("ERROR: Could not delete file.");
                     }*/
-                }else if(downloadFile(new File(ih.getNoteFolderPath() + "\\" + dbxF.getName()))){
+                }else if(downloadFile(new File(ih.getNoteFolderPath() + "/" + dbxF.getName()))){
                     this.updateMessage("Successfully downloaded: " + f.getName());
                     downloadedFiles++;
                     this.updateProgress((double)downloadedFiles, (double)totalFiles);

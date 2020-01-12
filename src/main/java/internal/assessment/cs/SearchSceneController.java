@@ -108,7 +108,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        FileHelper jsonFileHelper = new FileHelper(getDataFolderPath() + "\\info.json");
+        FileHelper jsonFileHelper = new FileHelper(getDataFolderPath() + "/info.json");
         JSONObject jsonInfo = jsonFileHelper.readToJSONObj();
         JSONArray tags = new JSONArray();
 

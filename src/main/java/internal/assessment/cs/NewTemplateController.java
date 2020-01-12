@@ -45,7 +45,7 @@ public class NewTemplateController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        FileHelper currentFile = new FileHelper(getNoteFolderPath() + "\\" + filename);
+        FileHelper currentFile = new FileHelper(getNoteFolderPath() + "/" + filename);
         try {
             lstvwTags.getItems().addAll(currentFile.searchForTags());
         }catch(NullPointerException e){

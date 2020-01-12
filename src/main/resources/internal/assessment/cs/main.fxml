@@ -49,6 +49,8 @@
                   <CheckMenuItem fx:id="menuBtnBoolRenderMd" mnemonicParsing="false" selected="true" text="Render Markdown" />
                   <CheckMenuItem fx:id="menuBtnBoolRenderMj" mnemonicParsing="false" text="Render MathJax" />
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <CheckMenuItem fx:id="menuBtnShowTags" mnemonicParsing="false" text="Show Tags" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <CheckMenuItem fx:id="menuBtnBoolPauseRender" mnemonicParsing="false" text="Pause Rendering" />
               </items>
             </Menu>
