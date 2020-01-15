@@ -34,7 +34,7 @@ public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFOR
         //      upload the file
         // }
         // test to see if a file that is in dropbox is found locally. {
-        //      if it's not, delete it from dropbox. (only do this if you are updating the local library with dropbox upon launching the application)
+        //      if it's not, delete it from dropbox.
         // }
 
         // first deletes all files in dropbox that don't existing locally.

@@ -82,6 +82,7 @@ public class ViewController extends InfoHelper implements Initializable {
     public CheckMenuItem menuBtnBoolRenderMj;
     public CheckMenuItem menuBtnBoolRenderMd;
     public CheckMenuItem menuBtnBoolPauseRender;
+    public CheckMenuItem menuBtnShowTags;
 
     enum RenderType {
         NONE,
@@ -433,7 +434,7 @@ public class ViewController extends InfoHelper implements Initializable {
 
     private String markdownToHTML(String markdown){ // code from flexmark github homepage
         Node doc = parser.parse(markdown);
-        return model.parseTextForTags(renderer.render(doc));
+        return model.parseTextForTags(renderer.render(doc), menuBtnShowTags.isSelected());
     }
 
     private void createNewNote(String content, String title){ // for when a specified file is requested to be opened
@@ -505,6 +506,7 @@ public class ViewController extends InfoHelper implements Initializable {
             //menuBtnAuthDropbox.setDisable(true);
         }
 
+
         tabPane.getSelectionModel().selectedItemProperty().addListener( // change listener to detect a tab selection change
                 new ChangeListener<Tab>() {
                     @Override
@@ -519,6 +521,16 @@ public class ViewController extends InfoHelper implements Initializable {
                     }
                 }
         );
+
+        // render tags or not change listener
+
+        menuBtnShowTags.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                showRenderedText();
+            }
+        });
+
 
         // will change the render type preference.
         menuBtnBoolRenderText.selectedProperty().addListener(new ChangeListener<Boolean>() {

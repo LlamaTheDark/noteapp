@@ -134,7 +134,7 @@ public class Model {
         return false;
     }
 
-    String parseTextForTags(String text){
+    String parseTextForTags(String text, boolean showTags){
         String[] splitArr = text.split("((?<=#)|(?=#))");
         String[] tmp;
 
@@ -142,12 +142,23 @@ public class Model {
 
         for(int i = 0; i <= splitArr.length-3; i++){
             if(splitArr[i].equals("#") && splitArr[i+2].equals("#")){
-                if(i > 0 && !splitArr[i-1].contains("</p>")){
-                    splitArr[i] = "<br><span style=\"background-color: #DCDCDC;font-family: Consolas,monaco,monospace;font-size: 12.25\">";
+                if(showTags) {
+                    if (i > 0 && !splitArr[i - 1].contains("</p>")) {
+                        splitArr[i] = "<br><span style=\"background-color: #DCDCDC;font-family: Consolas,monaco,monospace;font-size: 12.25\">";
+                    } else {
+                        splitArr[i] = "<span style=\"background-color: #DCDCDC;font-family: Consolas,monaco,monospace;font-size: 12.25\">";
+                    }
+                    splitArr[i + 2] = "</span><br>";
                 }else{
-                    splitArr[i] = "<span style=\"background-color: #DCDCDC;font-family: Consolas,monaco,monospace;font-size: 12.25\">";
+                    if (i > 0 && !splitArr[i - 1].contains("</p>")) {
+                        splitArr[i] = "<br>";
+                    }else {
+                        splitArr[i] = "";
+                    }
+                    for(int j = i+1; j <= i + 2; j++){
+                        splitArr[j] = "";
+                    }
                 }
-                splitArr[i+2] = "</span><br>";
             }
         }
 
