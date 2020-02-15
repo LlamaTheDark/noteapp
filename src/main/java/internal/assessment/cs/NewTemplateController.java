@@ -28,7 +28,7 @@ public class NewTemplateController extends InfoHelper implements Initializable {
 
     public void handleDoneAction(ActionEvent actionEvent){
         if(txtName.getText().equals("")){
-            txtPrompt.setText("Please name your template:");
+            txtPrompt.setText("Please name your template:"); // if the user hasn't named it, it requests a name
         }else{
             setTmpInfo(txtName.getText());
         }
@@ -38,10 +38,9 @@ public class NewTemplateController extends InfoHelper implements Initializable {
     public void handleCancelAction(ActionEvent actionEvent) {
         close();
     }
-
     private void close(){
         ((Stage)btnCancel.getScene().getWindow()).close();
-    }
+    } // I use close more than once in this class so I made it a function
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -51,13 +50,13 @@ public class NewTemplateController extends InfoHelper implements Initializable {
         }catch(NullPointerException e){
 
         }
-        btnFinish.setOnAction(new EventHandler<ActionEvent>() {
+        btnFinish.setOnAction(new EventHandler<ActionEvent>() { // when you click finish...
             @Override
             public void handle(ActionEvent event) {
                 handleDoneAction(event);
             }
         });
-        btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+        btnCancel.setOnAction(new EventHandler<ActionEvent>() { // when you click cancel...
             @Override
             public void handle(ActionEvent event) {
                 handleCancelAction(event);

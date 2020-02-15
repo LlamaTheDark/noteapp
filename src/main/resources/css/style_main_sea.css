@@ -1,0 +1,222 @@
+/*********************************************************************************************************
+
+TEXT AREA
+
+*********************************************************************************************************/
+.text-area {
+    -fx-control-inner-background: #63b7af; /* background color of the text area */
+    -fx-background-color: #347474; /* outline color of the text area */
+    -fx-text-color: ghostwhite; /* color of the text */
+}
+.text-area:focused {
+    /*-fx-faint-focus-color: transparent;*/
+    -fx-faint-focus-color:#63b7af; /* here rgba (corrected) */
+}
+
+/*********************************************************************************************************
+
+TAB PANE
+
+*********************************************************************************************************/
+.tab-pane *.tab-header-background {
+    -fx-background-color: #347474; /* color of area behind the tab */
+}
+.tab-pane *.tab {
+    -fx-background-color: #347474;   /* background color of tab*/
+    -fx-text-base-color: ghostwhite; /* tab name color */
+}
+.tab-pane *.tab:selected {
+    -fx-background-color: #347474;
+    -fx-border-color: #ee8572; /*color of current tab indicator */
+    -fx-border-width: 0 0 1 0;    /* top right bottom left*/
+}
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-border-color: #25394e; /*color of 'selected' indicator */
+    -fx-border-width: 1 1 0 1; /* top right bottom left*/
+}
+.tab-pane {
+    -fx-background-color: #63b7af; /* color of pane when there are no tabs */
+}
+
+/*********************************************************************************************************
+
+BUTTON
+
+*********************************************************************************************************/
+.button {
+    -fx-background-color: #25394e;
+    -fx-text-base-color: ghostwhite;
+}
+.button:pressed {
+    -fx-background-color: #ee8572;
+}
+
+/*********************************************************************************************************
+
+MENU
+
+*********************************************************************************************************/
+.menu-bar {
+    -fx-background-color: #35495e;
+}
+.menu {
+    -fx-text-base-color: ghostwhite;
+}
+.menu:hover{
+    -fx-background-color: #347474;
+}
+.menu:selected{
+    -fx-background-color: #347474;
+}
+.menu:showing{
+    -fx-background-color: #ee8572; /* color of the menu when you're sorting through the menu items */
+}
+.menu-item {
+    -fx-background-color: #63b7af;
+}
+.menu-item:hover{
+    -fx-background-color: #5E5E5E;
+}
+.menu-item:focused{
+    -fx-background-color: #ee8572; /* color of the menu item you're hovering over */
+}
+.context-menu{
+    -fx-background-color: #63b7af; /* color of background of the actual dropdown menu*/
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 0 6 6 6, 0 5 5 5, 0 4 4 4;
+    -fx-padding: 0.333333em 0.083333em 0.666667em 0.083333em; /* 4 1 8 1 */
+}
+.check-menu-item {
+    -fx-mark-color: ghostwhite; /* color of the check mark */
+}
+.separator > .line {
+    -fx-border-color: #ee8572;
+}
+
+/*********************************************************************************************************
+
+SPLIT PANE
+
+*********************************************************************************************************/
+.split-pane{
+    -fx-background-color: #347474; /* background behind all the other objects in the split pane */
+}
+.split-pane:horizontal > .split-pane-divider {
+    -fx-background-color: #347474; /* color of the divider */
+}
+
+/*********************************************************************************************************
+
+PROGRESS BAR
+
+*********************************************************************************************************/
+.progress-bar{
+    -fx-accent: ghostwhite;
+}
+
+/*********************************************************************************************************
+
+COMBO BOX
+
+*********************************************************************************************************/
+.combo-box {
+    -fx-background-color: #63b7af;
+    -fx-control-inner-background: #63b7af;
+    -fx-border-color: #ee8572;
+    -fx-border-width: 0 0 1 0;
+
+}
+.combo-box .arrow {
+    -fx-background-color: ghostwhite;
+}
+.combo-box-base:editable > .arrow-button {
+    -fx-background-color: #00000000, #181818, #282828, #282828;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 3px, 3px, 2px, 1px;
+    -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em; /* 4 8 4 8 */
+    -fx-text-fill: -fx-text-base-color;
+    -fx-alignment: CENTER;
+    -fx-content-display: LEFT;
+}
+.combo-box .text-field {
+    -fx-prompt-text-fill: #FFFFFF7F;
+    -fx-border-color: #63b7af;
+    -fx-border-width: 2 2 2 2;
+    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
+}
+.combo-box .text-field:focused{
+    -fx-background-color: linear-gradient(to bottom, derive(-fx-text-box-border, -10%), -fx-text-box-border),
+            linear-gradient(from 0px 0px to 0px 5px, derive(-fx-control-inner-background, -9%), -fx-control-inner-background);
+    -fx-background-color: -fx-text-box-border, -fx-control-inner-background;
+}
+
+/*********************************************************************************************************
+
+ANCHOR PANE
+
+*********************************************************************************************************/
+#searchAnchor, #templateAnchor, #templateNoteAnchor, #folderPathAnchor, #dbxAnchor {
+    -fx-background-color: #63b7af;
+}
+
+/*********************************************************************************************************
+
+TEXT
+
+*********************************************************************************************************/
+#sg_1, #sg_2, #alertText, #txtPrompt, #nts1, #nts2, #ntns1, #folderPathText{ /* text ids in the search scene controller */
+    -fx-fill: ghostwhite;
+}
+
+#previewTxt { /* the 'Preview' above the WebView */
+    -fx-fill: ghostwhite;
+}
+
+
+
+/*********************************************************************************************************
+
+TEXT FIELD
+
+*********************************************************************************************************/
+#txtKeyphrase, #txtName, #txtFldPath { /* all the text fields */
+    -fx-background-color: #63b7af;
+    -fx-control-inner-background: #63b7af;
+    -fx-border-color: #ee8572;
+    -fx-border-width: 0 0 1 0;
+}
+#txtKeyphrase:focused .content {
+    -fx-border-width: 0 0 3 0;
+}
+#txtName, #txtFldPath {
+    -fx-prompt-text-fill: #FFFFFF7F;
+}
+
+
+
+/*********************************************************************************************************
+
+LIST VIEW
+
+*********************************************************************************************************/
+.list-view {
+    -fx-background-color: #63b7af;
+}
+
+.list-cell{
+    -fx-text-fill: ghostwhite;
+    -fx-background-color: #63b7af;
+    /*-fx-border-color: #ee8572;
+    -fx-border-width: 0 0 0 1;*/
+
+    -fx-background-color: #35495e, #ee8572;
+    -fx-background-insets: 0 0 0 0, 7 390 7 2; /* top right bottom left */
+
+    /* see https://stackoverflow.com/questions/42465850/fx-background-radius-and-fx-background-insets-in-javafx */
+}
+.list-cell:hover{
+    -fx-background-color: #ee85727F;
+}
+.list-cell:selected {
+    -fx-background-color: #ee85727F;
+}

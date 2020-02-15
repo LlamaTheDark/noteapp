@@ -6,8 +6,6 @@ import com.dropbox.core.v2.files.*;
 import com.dropbox.core.v2.users.FullAccount;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.ProgressBar;
-
 
 public class DropboxHelper extends InfoHelper { //TODO: store the user information in a non-volatile place so the user can keep his/her account linked
     private final String APP_KEY = "xg3bskf1jlnkl4b";
@@ -79,7 +77,7 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
         progressControl.rebindSyncLabel(sync.messageProperty());
         progressControl.startLoadingAnimation();
 
-        sync.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, //
+        sync.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, // this code runs when the progress bar hits a progress of '1'
                 new EventHandler<WorkerStateEvent>(){
                     @Override
                     public void handle(WorkerStateEvent event) {
@@ -115,33 +113,16 @@ public class DropboxHelper extends InfoHelper { //TODO: store the user informati
         new Thread(sync).start();
     }
 
-
-//    public void uploadFile(File f) {
-//        try (InputStream in = new FileInputStream(f.getAbsolutePath())) {
-//            FileMetadata metadata = client.files().uploadBuilder("/myNotesFolder/" + f.getName())
-//                    .uploadAndFinish(in);
-//        } catch (IOException | DbxException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     private void createFolder(){
         try {
             CreateFolderResult folder = client.files().createFolderV2("/myNotesFolder");
-            //System.out.println(folder.getMetadata().getName());
         } catch (CreateFolderErrorException err) {
             if (err.errorValue.isPath() && err.errorValue.getPathValue().isConflict()) {
-                //err.printStackTrace();
-                //System.out.println("Something already exists at the path.");
             } else {
                 err.printStackTrace();
-                //System.out.print("Some other CreateFolderErrorException occurred...");
-                //System.out.print(err.toString());
             }
         } catch (Exception err) {
             err.printStackTrace();
-            //System.out.print("Some other Exception occurred...");
-            //System.out.print(err.toString());
         }
     }
 }

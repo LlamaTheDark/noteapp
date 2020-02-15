@@ -8,15 +8,15 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="465.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.SearchSceneController">
+<AnchorPane fx:id="searchAnchor" prefHeight="465.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.SearchSceneController">
    <children>
-      <Text layoutX="14.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search by keyword or phrase:">
+      <Text id="sg_1" layoutX="14.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search by keyword or phrase:">
          <font>
             <Font size="19.0" />
          </font>
       </Text>
       <TextField fx:id="txtKeyphrase" layoutX="14.0" layoutY="42.0" onAction="#handleGoToTagAction" prefHeight="25.0" prefWidth="395.0" />
-      <Text layoutX="14.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search by tag:">
+      <Text id="sg_2" layoutX="14.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search by tag:">
          <font>
             <Font size="19.0" />
          </font>
@@ -34,6 +34,6 @@
          </font>
       </Button>
       <Button fx:id="btnCancel" layoutX="334.0" layoutY="420.0" mnemonicParsing="false" onAction="#handleCancelAction" prefHeight="31.0" prefWidth="75.0" text="CANCEL" />
-      <Text fx:id="txtAlert" layoutX="15.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="223.63671875" />
+      <Text id="alertText" fx:id="txtAlert" layoutX="15.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="223.63671875" />
    </children>
 </AnchorPane>

@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 class FileHelper {
 
     private Model model = new Model();
@@ -110,7 +109,6 @@ class FileHelper {
             splitText[i] = text[i].split(""); // splits the whole text into each individual letter
         }
 
-
         String[] splitKeyphrase = keyphrase.split(""); // splits entire keyphrase into each individual letter.
 
         for (int i = limits[0]; i <= limits[1]; i++) { // searches from the lower index to the upper index
@@ -125,7 +123,7 @@ class FileHelper {
                         && isMatch) { // makes sure everything is within the bounds and that there is still a match to be had
                     if (!splitKeyphrase[keyPhraseIndex].toLowerCase().equals(splitText[i][lineIndex].toLowerCase())) {
                         isMatch = false; // if the letter in the keyphrase doesn't match the letter of the line (at the same
-                    } else {             // index relative to j, then there cannot be a match for this increment of j.
+                    } else {             // index relative to j) then there cannot be a match for this increment of j.
                         keyPhraseIndex++;// otherwise, the letters match and the next letters in the line can be tested
                         lineIndex++;
                     }

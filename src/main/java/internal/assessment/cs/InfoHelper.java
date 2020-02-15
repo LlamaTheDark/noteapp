@@ -29,6 +29,15 @@ class InfoHelper{
         tmp.put("accessToken", dbxAccessToken);
         fh.writeToFile(tmp.toJSONString());
     }
+
+    void setStyleType(String newStyle){
+        JSONObject tmp = fh.readToJSONObj();
+        tmp.put("style", newStyle);
+        fh.writeToFile(tmp.toJSONString());
+    }
+    String getStyleType(){
+        return (String)fh.readToJSONObj().get("style");
+    }
 }
 
 

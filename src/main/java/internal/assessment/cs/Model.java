@@ -45,11 +45,6 @@ public class Model {
         return confirmation.showAndWait().get() == ButtonType.OK;
     }
 
-    public String addLineBreaks(String text){
-
-        return "";
-    }
-
     static String getSurroundingText(String[] arr, int lowerIndex, int upperIndex) { // the two ints describe
         String surroundingText = "";                                                 // the start and end of
         int lowerLimit = lowerIndex, upperLimit = upperIndex;                        // the phrase
@@ -99,9 +94,6 @@ public class Model {
         return limits;
     }
 
-//    public String highlightText(String content, String text){
-//        return content.replaceAll(text, "<mark>" + text + "</mark>");
-//    }
 
     String arrayToString(String[] arr) {
         String toString = "";
@@ -169,10 +161,33 @@ public class Model {
     }
 
 
-    static String[] getNameAndValue(String text){ // should get a string in the form "name=value" or "name=value]"
-        String[] nv = text.split("=");
-        nv[1] = nv[1].replaceAll("\\]|\n|\r|\t", "");
 
-        return nv;
+
+    static void bubbleSort(String[] list){
+        for (int i = 0; i < list.length; i++){ // for each
+            for(int j = 0; j < list.length-1-i; j++){
+                if(changeNeeded(list[j], list[j+1], 0)){
+                    String tmp = list[j];
+                    list[j] = list[j+1];
+                    list[j+1] = tmp;
+                }
+            }
+        }
     }
+
+    // chars automatically convert to ints as interpreted by ASCII (alphabetical for lower case)
+    static boolean changeNeeded(String left, String right, int letterIndex){ // if true, right is smaller -- false otherwise
+        if(letterIndex < left.length() && letterIndex < right.length()) {
+            if (left.charAt(letterIndex) > right.charAt(letterIndex)) { // is right smaller than left?
+                return true;
+            } else if (left.charAt(letterIndex) == right.charAt(letterIndex)) { // if they have the same "first" letter
+                return changeNeeded(left, right, letterIndex + 1); // recursive call to test the same thing
+            } else {                                                         // with the next letters
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
 }

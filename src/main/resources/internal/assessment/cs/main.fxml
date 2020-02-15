@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane prefHeight="660.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.ViewController">
+<AnchorPane fx:id="mainAnchor" prefHeight="660.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.ViewController">
    <children>
       <MenuBar fx:id="menu" layoutX="8.0" layoutY="1.0" prefHeight="25.0" prefWidth="720.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <menus>
@@ -50,9 +50,18 @@
                   <CheckMenuItem fx:id="menuBtnBoolRenderMd" mnemonicParsing="false" selected="true" text="Render Markdown" />
                   <CheckMenuItem fx:id="menuBtnBoolRenderMj" mnemonicParsing="false" text="Render MathJax" />
                   <SeparatorMenuItem mnemonicParsing="false" />
+                  <CheckMenuItem fx:id="menuBtnBoolPauseRender" mnemonicParsing="false" text="Pause Rendering" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                   <CheckMenuItem fx:id="menuBtnShowTags" mnemonicParsing="false" text="Show Tags" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <CheckMenuItem fx:id="menuBtnBoolPauseRender" mnemonicParsing="false" text="Pause Rendering" />
+                  <Menu mnemonicParsing="false" text="Style">
+                    <items>
+                      <MenuItem fx:id="menuBtnStyleDefault" mnemonicParsing="false" onAction="#handleStyleDefaultAction" text="Default" />
+                      <MenuItem fx:id="menuBtnStyleDark" mnemonicParsing="false" onAction="#handleStyleDarkAction" text="Dark" />
+                      <MenuItem fx:id="menuBtnStyleTerminal" mnemonicParsing="false" onAction="#handleStyleTerminalAction" text="Terminal" />
+                      <MenuItem fx:id="menuBtnStyleSea" mnemonicParsing="false" onAction="#handleStyleSeaAction" text="Sea" />
+                    </items>
+                  </Menu>
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Sync">
@@ -81,6 +90,11 @@
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="401.0" prefWidth="382.0">
                <children>
                   <WebView fx:id="wbvPreview" layoutY="25.0" prefHeight="602.0" prefWidth="356.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+                  <Text id="previewTxt" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Preview" textAlignment="RIGHT" wrappingWidth="348.109375" AnchorPane.rightAnchor="7.890625" AnchorPane.topAnchor="4.6318359375">
+                     <font>
+                        <Font name="Consolas" size="18.0" />
+                     </font>
+                  </Text>
                </children>
             </AnchorPane>
          </items>
@@ -90,11 +104,6 @@
             <Font size="10.0" />
          </font>
       </Button>
-      <Text layoutX="360.875" layoutY="43.3681640625" strokeType="OUTSIDE" strokeWidth="0.0" text="Preview" textAlignment="RIGHT" wrappingWidth="348.109375" AnchorPane.rightAnchor="11.015625" AnchorPane.topAnchor="30.0">
-         <font>
-            <Font name="Consolas" size="18.0" />
-         </font>
-      </Text>
       <ProgressBar fx:id="pbSyncProgress" layoutX="211.0" layoutY="10.0" prefHeight="9.0" prefWidth="160.0" progress="0.0" visible="false" />
       <ImageView fx:id="imgLoading" fitHeight="17.0" fitWidth="22.0" layoutX="375.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
       <Label fx:id="lblSyncUpdate" layoutX="401.0" layoutY="4.0" />

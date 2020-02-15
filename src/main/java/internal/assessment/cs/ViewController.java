@@ -30,13 +30,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 // markdown imports
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-
-import static spark.Spark.*;
 
 public class ViewController extends InfoHelper implements Initializable {
 
@@ -128,8 +127,9 @@ public class ViewController extends InfoHelper implements Initializable {
     private File selectedFile;
     private int tabCount = 0;
     //private String noteFolderPath; // had to change this from the file to the String because files are immutable objects
-                                   // now it just creates a new file with the noteFolderPath directory whenever it is needed.
-    // for saving and opening files (the window helper from the OS) // TODO: eventually sync the files from the notes folder
+                                     // this has been moved to the InfoHelper class for accessibility.
+                                     // now it just creates a new file with the noteFolderPath directory whenever it is needed.
+    // for saving and opening files (the window helper from the OS)
 
     //
     DropboxHelper dh = new DropboxHelper(this);
@@ -156,9 +156,11 @@ public class ViewController extends InfoHelper implements Initializable {
 
     public void handleSetNotesFolderAction(ActionEvent actionEvent) {
         try {
-            Stage noteFolderStage = new Stage();
+            Stage noteFolderStage = new Stage(); // creates the stage
             noteFolderStage.setTitle("Set Notes Folder");
-            noteFolderStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("folderPathScene.fxml")), 466, 97));
+            Scene noteFolderScene = new Scene(FXMLLoader.load(getClass().getResource("folderPathScene.fxml")), 466, 97);
+            noteFolderScene.getStylesheets().add("/css/style_main_" + getStyleType() + ".css");
+            noteFolderStage.setScene(noteFolderScene);
             noteFolderStage.show();
         }catch(IOException e){
             System.out.println("Error: missing resource...");
@@ -184,6 +186,12 @@ public class ViewController extends InfoHelper implements Initializable {
                 showRenderedText();
             }
         });
+
+//        newTabTxt.setStyle("" +
+//                "-fx-control-inner-background: darkslategrey;" +
+//                "-fx-background-color: darkslategrey;" +
+//                "-fx-text-color: ghostwhite;" +
+//                "");
     }
 
     public void handleSaveFileAction(ActionEvent actionEvent) {
@@ -210,14 +218,11 @@ public class ViewController extends InfoHelper implements Initializable {
         selectedFile = openFileChooser("Open...", "open", ""); // shows the open dialogue and sets selectedFile to whatever file is selected
         if (selectedFile != null){
             FileHelper fh = new FileHelper(selectedFile.getPath());
-            createNewNote(fh.readFileToStr(), selectedFile.getName()); // going to have to change all 'readFileToArr' bits
-        }/*else{
-            System.out.println("This is not a valid file name");
-        }*/
+            createNewNote(fh.readFileToStr(), selectedFile.getName()); // changed all 'readFileToArr().toString bits' lines to "fh.readFileToStr()"
+        }
     }
     public void handleDeleteFileAction(ActionEvent actionEvent) {
         if (!tabPaneIsEmpty()){
-//            System.out.println(getNoteFolderPath() + "/" + getCurrentTab().getText());
             if (Model.showConfirmationMsg("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?",
                     "Press \'OK\' to confirm."
                     )) {
@@ -238,7 +243,9 @@ public class ViewController extends InfoHelper implements Initializable {
             setTmpInfo("");
             Stage searchStage = new Stage();
             searchStage.setTitle("Search Files");
-            searchStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("searchScene.fxml")), 420, 465));
+            Scene searchScene = new Scene(FXMLLoader.load(getClass().getResource("searchScene.fxml")), 420, 465);
+            searchScene.getStylesheets().add("/css/style_main_" + getStyleType() + ".css");
+            searchStage.setScene(searchScene);
             searchStage.showAndWait();
             if(!getTmpInfo().equals("")){
                 createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"/"+ getTmpInfo())).readFileToArr()), getTmpInfo());
@@ -300,14 +307,8 @@ public class ViewController extends InfoHelper implements Initializable {
     }
 
     public void handleExitApplicationAction(ActionEvent actionEvent) {
-        ((Stage)btnSearch.getScene().getWindow()).close();
+        ((Stage)btnSearch.getScene().getWindow()).close(); // easiest to grab the Stage object from one of the object references in the scene.
     }
-
-    public void handleOpenSparkServerAction(ActionEvent actionEvent) {
-        FileHelper fh = new FileHelper(getNoteFolderPath() + "/index.html");
-        get("/csianoteapp", (req, res) -> fh.readFileToStr());
-    }
-    public void handleCloseSparkServerAction(ActionEvent actionEvent) { stop(); }
 
     public void handleShowAboutInfoAction(ActionEvent actionEvent) {
         createNewNote((new FileHelper("README.txt")).readFileToStr(), "README.txt");
@@ -315,30 +316,33 @@ public class ViewController extends InfoHelper implements Initializable {
     //functions called past this point are not called as a direct result of interaction with the GUI//
 
     public void handleNewNoteFromTemplateAction(ActionEvent actionEvent) {
-        setTmpInfo("");
+        setTmpInfo(""); // resets
         try{
+            //setting up the scene...
             Stage newTemplateNoteStage = new Stage();
             newTemplateNoteStage.setTitle("New Template");
-            newTemplateNoteStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("newTemplateNoteScene.fxml")), 195, 300));
-            newTemplateNoteStage.showAndWait();
+            Scene templateNoteScene = new Scene(FXMLLoader.load(getClass().getResource("newTemplateNoteScene.fxml")), 195, 300);
+            templateNoteScene.getStylesheets().add("/css/style_main_" + getStyleType() + ".css");
+            newTemplateNoteStage.setScene(templateNoteScene);
+            newTemplateNoteStage.showAndWait(); // stops code in this scene until the newTemplateNoteScene is closed
+
             if(!getTmpInfo().equals("")){
                 String newNoteContent = "";
                 FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
                 JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
                 JSONArray tagsInTemplate = (JSONArray)jsonTemplates.get(getTmpInfo());
-                for (Object tag : tagsInTemplate){
+                for (Object tag : tagsInTemplate){ // this loads the selected template with a tag/endtag/line/repeat format
                     newNoteContent += "#" + tag.toString() + "#\n\n\n\n" + "#/" + tag.toString() + "#\n***\n\n";
                 }
                 createNewNote(newNoteContent, getTmpInfo() + " note");
             }
-        }catch(IOException e){
-
-        }
+        }catch(IOException e){} // the user hasn't selected any files (i.e. the user pressed cancel)
     }
     public void handleNewTemplateFromNoteAction(ActionEvent actionEvent){ // todo: support nested tags
         setTmpInfo(""); // will be set to the chosen name for template
         try {
             if(!tabPaneIsEmpty()) {
+                //this code just sets up the scene for the new template.
                 Stage newTemplateStage = new Stage();
                 newTemplateStage.setTitle("New Template");
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("newTemplateScene.fxml"));
@@ -347,10 +351,13 @@ public class ViewController extends InfoHelper implements Initializable {
                 loader.setController(templateController);
 
                 Parent root = loader.load();
-
-                newTemplateStage.setScene(new Scene(root, 289, 172));
+                //------
+                Scene newTemplateScene = new Scene(root, 289, 172);
+                newTemplateScene.getStylesheets().add("/css/style_main_" + getStyleType() + ".css");
+                newTemplateStage.setScene(newTemplateScene);
                 newTemplateStage.showAndWait();
-                if(!getTmpInfo().equals("") ){
+                // getTmpInfo() is used to more conveniently transfer data across scenes.
+                if(!getTmpInfo().equals("") ){ // in this case, the tmp info becomes the path to the file currently open
                     FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
                     JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
                     FileHelper templateFile = new FileHelper(getNoteFolderPath() + "/" + getCurrentTab().getText());
@@ -364,7 +371,7 @@ public class ViewController extends InfoHelper implements Initializable {
                     jsonTemplates.put(getTmpInfo(), tags);
                     jsonTemplatesFile.writeToFile(jsonTemplates.toJSONString());
                 }
-            }else{
+            }else{ // the user doesn't have any files open.
                 Model.showErrorMsg("No File Selected", "Please open a file to create a template from it.");
             }
         } catch (IOException e) {
@@ -372,22 +379,42 @@ public class ViewController extends InfoHelper implements Initializable {
         }
     }
 
+    public void handleStyleDefaultAction(ActionEvent actionEvent) {
+        setStyleType("default");
+        reloadStyle();
+    }
+    public void handleStyleDarkAction(ActionEvent actionEvent) {
+        setStyleType("dark");
+        reloadStyle();
+    }
+    public void handleStyleTerminalAction(ActionEvent actionEvent) {
+        setStyleType("terminal");
+        reloadStyle();
+    }
+    public void handleStyleSeaAction(ActionEvent actionEvent) {
+        setStyleType("sea");
+        reloadStyle();
+    }
+
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
+
+    private void reloadStyle(){
+        Scene thisScene = btnSearch.getScene();
+        thisScene.getStylesheets().remove(thisScene.getStylesheets().size()-1);
+        thisScene.getStylesheets().add("/css/style_main_" + getStyleType() + ".css");
+        webEngine.setUserStyleSheetLocation(getClass().getResource("/css/style_web_" + getStyleType() + ".css").toString());
+    }
 
     private void showRenderedText(){ // Hides plain text editor and renders/shows WebView
         if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
             String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
-            //System.out.println(markdownToHTML(tabContent));
-            //webEngine.loadContent(tabContent);
-            //webEngine.load(pathToURL(getNoteFolderPath())); // todo: THERE IS A BUG IN JDK 11 WITH THIS TO ALWAYS THROW AN SSLException. JUST WORK AROUND IT
-            //System.out.println(pathToURL(getNoteFolderPath()));
 
             switch(renderType){
                 case BOTH:
                     webEngine.loadContent(markdownToHTML(tabContent) + scriptTags()); // has to parse the html from markdown first, then split the tags
-                    break;                                                            // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
+                    break;                                                               // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
                 case MARKDOWN:
                     webEngine.loadContent(markdownToHTML(tabContent));
                     break;
@@ -406,12 +433,6 @@ public class ViewController extends InfoHelper implements Initializable {
         }else{
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
         }
-
-        /*
-        WebEngine htmlEngine = (((WebView) ((ScrollPane) tmp.getContent()).getContent()).getEngine()); // finds the webengine in the corresponding scrollpane/webview
-        htmlEngine.loadContent("<b>biggie cheese</b>");
-        ((TextArea)tmp.getContent()).setText("");*/
-
     }
 
     private Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
@@ -456,6 +477,8 @@ public class ViewController extends InfoHelper implements Initializable {
                 showRenderedText();
             }
         });
+//        newTabTxt.setStyle("-fx-background-color: rgba(66, 66, 66);");
+//        newTabTxt.setStyle("-fx-text-fill: white");
     }
 
     void closeTab() {
@@ -491,19 +514,18 @@ public class ViewController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //can't find this setting in scenebuilder, TODO: add it to fxml file just before you finish this whole thing
+        //can't find these settings in scenebuilder, so putting them in manually here.
         tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
         wbvPreview.setFontScale(0.85);
         webEngine = wbvPreview.getEngine();
+        webEngine.setUserStyleSheetLocation(getClass().getResource("/css/style_web_" + getStyleType() + ".css").toString());
         if (dh.accountHasBeenLinked()){
             menuBtnSyncFiles.setDisable(false);
             menuBtnDownloadFiles.setDisable(false);
-            //syncDropboxToLocal();
         }else{
             menuBtnSyncFiles.setDisable(true);
             menuBtnDownloadFiles.setDisable(true);
             menuBtnUnlinkDbxAcc.setDisable(true);
-            //menuBtnAuthDropbox.setDisable(true);
         }
 
 
@@ -536,7 +558,7 @@ public class ViewController extends InfoHelper implements Initializable {
         menuBtnBoolRenderText.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(newValue){
+                if(newValue){ // enabling the render text button enables the option to select the other buttons.
                     menuBtnBoolRenderMd.setDisable(false);
                     menuBtnBoolRenderMj.setDisable(false);
                     menuBtnBoolPauseRender.setDisable(false);
@@ -583,7 +605,7 @@ public class ViewController extends InfoHelper implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if(newValue){
-                    if(menuBtnBoolRenderMd.isSelected()){
+                    if(menuBtnBoolRenderMd.isSelected()){ // just testing
                         renderType = RenderType.BOTH;
                     }else{
                         renderType = RenderType.MATHJAX;
@@ -616,13 +638,3 @@ public class ViewController extends InfoHelper implements Initializable {
         });
     }
 }
-/*
-TODO: start server: get("/hello", (req, res) -> "Hello World");
-TODO: stop server: stop();
- */
-
-
-/*
-TODO: implement an "add file(s)" option to add files to the notes folder
-
- */

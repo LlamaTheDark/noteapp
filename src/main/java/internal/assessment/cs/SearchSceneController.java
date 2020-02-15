@@ -75,15 +75,19 @@ public class SearchSceneController extends InfoHelper implements Initializable {
         }
     }
     public void handleEditAction(ActionEvent actionEvent) {
-        setTmpInfo(resultsFileNames.get(lsvResults.getSelectionModel().getSelectedIndex()));
-        ((Stage)btnCancel.getScene().getWindow()).close();
+        try{
+            setTmpInfo(resultsFileNames.get(lsvResults.getSelectionModel().getSelectedIndex()));
+            ((Stage)btnCancel.getScene().getWindow()).close();
+        }catch(java.lang.IndexOutOfBoundsException e){
+
+        }
     }
     public void handleCancelAction(ActionEvent actionEvent) {
         closeWindow();
     }
 
     public void handleMouseClickAction(MouseEvent mouseEvent) {
-        btnEdit.setDisable(false);
+        btnEdit.setDisable(false); //TODO: fix this garbage
         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)
                 && mouseEvent.getClickCount()==2
         ){
@@ -93,7 +97,6 @@ public class SearchSceneController extends InfoHelper implements Initializable {
     }
 
     public void handleGoToTagAction(ActionEvent actionEvent) { // when user presses "ENTER" key in txtKeyphrase
-        //cbChooseTag.getEditor().textProperty().
         cbChooseTag.requestFocus();
     }
     public void handleGoToSearchAction(KeyEvent keyEvent){
@@ -108,19 +111,33 @@ public class SearchSceneController extends InfoHelper implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //cbChooseTag.getScene().getStylesheets().add("/css/style_main_dark.css");
+
         FileHelper jsonFileHelper = new FileHelper(getDataFolderPath() + "/info.json");
         JSONObject jsonInfo = jsonFileHelper.readToJSONObj();
         JSONArray tags = new JSONArray();
 
-        for(File f : Objects.requireNonNull(new File(getNoteFolderPath()).listFiles())){ // TODO: you should maybe do this somewhere else...
+        for(File f : Objects.requireNonNull(new File(getNoteFolderPath()).listFiles())){
             FileHelper fh = new FileHelper(f.getPath());
-            //System.out.println((fh.searchForTags()));
             for (String tag : fh.searchForTags()){
                 if(!tags.contains(tag)){
                     tags.add(tag);
                 }
             }
         }
+
+        // to alphabetize
+        String[] tagsList = new String[tags.size()];
+        for(int i = 0; i < tagsList.length; i++){
+            tagsList[i] = (String)tags.get(i);
+        }
+        Model.bubbleSort(tagsList);
+        tags.clear();
+        for(String tag: tagsList){
+            tags.add(tag);
+        }
+        //
+
 
         jsonInfo.put("tags", tags);
         jsonFileHelper.writeToFile(jsonInfo.toJSONString());

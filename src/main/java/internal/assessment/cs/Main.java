@@ -18,7 +18,7 @@ import org.json.simple.JSONObject;
 
 public class Main extends Application { // TODO: CHANGE ALL DIRECTORIES TO FIT WINDOWS, MAC OSX, AND LINUX
 
-    public String rootDir = getRootDir();
+    InfoHelper ih = new InfoHelper();
 
     public static void main(String[] args) {
         File tmp = new File("NoteAppData"); // creates a set place for files to be stored
@@ -30,20 +30,21 @@ public class Main extends Application { // TODO: CHANGE ALL DIRECTORIES TO FIT W
             tmp.mkdir();
 
             JSONObject jsonINFO = new JSONObject();
-            jsonINFO.put("noteFolderPath", "/");
-            jsonINFO.put("accessToken", "");
-            jsonINFO.put("tags", new JSONArray());
+            jsonINFO.put("noteFolderPath", "/"); // stores note storage folder path
+            jsonINFO.put("accessToken", ""); // stores Dropbox auth token
+            jsonINFO.put("tags", new JSONArray()); // stores all the tags it detects in the system (for the dropdown menu in search)
+            jsonINFO.put("style", "dark");
             fhInfo.writeFile(jsonINFO.toJSONString());
 
             JSONObject templates = new JSONObject();
             JSONArray exampleTemplate = new JSONArray();
             JSONArray templateNames = new JSONArray();
-            templateNames.add("example template");
+            templateNames.add("example template"); // has an example template automatically loaded (the user can delete this)
             exampleTemplate.add("description");
             exampleTemplate.add("mathematics");
             exampleTemplate.add("date");
             templates.put("example template", exampleTemplate);
-            templates.put("Template Names", templateNames);
+            templates.put("Template Names", templateNames); // it has to use template names to reference the template variables
             fhTemplates.writeFile(templates.toJSONString());
 
         }
@@ -54,11 +55,13 @@ public class Main extends Application { // TODO: CHANGE ALL DIRECTORIES TO FIT W
     @Override
     public void start(Stage primaryStage) throws IOException {
         //Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+        ih.setStyleType("terminal");
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         Parent root = loader.load();
         ViewController controller = loader.getController();
         Scene mainScene = new Scene(root, 719, 701);
+        mainScene.getStylesheets().add("/css/style_main_" + ih.getStyleType() + ".css");
         primaryStage.setScene(mainScene);
         primaryStage.setTitle("Notes");
         primaryStage.show();

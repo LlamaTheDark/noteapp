@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="97.0" prefWidth="466.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.FolderPathController">
+<AnchorPane id="folderPathAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="97.0" prefWidth="466.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.FolderPathController">
    <children>
-      <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Please Enter Notes Folder Path:" />
+      <Text fx:id="folderPathText" layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Please Enter Notes Folder Path:" />
       <TextField fx:id="txtFldPath" layoutX="7.0" layoutY="35.0" prefHeight="25.0" prefWidth="359.0" promptText="ex: 'C:\Users\exampleUser\Documents\Notes'" />
       <Button fx:id="btnFindFolder" layoutX="369.0" layoutY="35.0" mnemonicParsing="false" onAction="#openFindFolderWindow" prefHeight="25.0" prefWidth="93.0" text="Find Folder" />
       <Button fx:id="btnDone" layoutX="369.0" layoutY="65.0" mnemonicParsing="false" onAction="#closeScene" prefHeight="25.0" prefWidth="93.0" text="Done" />

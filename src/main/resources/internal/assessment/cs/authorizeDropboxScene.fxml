@@ -7,7 +7,7 @@
 <?import javafx.scene.web.WebView?>
 
 
-<AnchorPane prefHeight="474.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.AuthorizeDropboxController">
+<AnchorPane id="dbxAnchor" prefHeight="474.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="internal.assessment.cs.AuthorizeDropboxController">
    <children>
       <WebView fx:id="wbvwAuthWebpage" prefHeight="412.0" prefWidth="472.0" />
       <TextField fx:id="txtAuthCode" layoutX="143.0" layoutY="418.0" prefHeight="25.0" prefWidth="325.0" />
