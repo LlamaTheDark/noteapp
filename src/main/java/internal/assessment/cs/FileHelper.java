@@ -1,5 +1,7 @@
 package internal.assessment.cs;
 
+import com.aspose.pdf.Document;
+import com.aspose.pdf.HtmlLoadOptions;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -8,6 +10,9 @@ import java.io.*;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+// for exporting as PDF:
+
 
 class FileHelper {
 
@@ -96,6 +101,18 @@ class FileHelper {
             System.out.println("Could not write to file. Invalid path. Or something else. I don't really know.");
         }
     }
+    static void writeFile(String fileContent, String FilePath){
+        try {
+            File f = new File(FilePath);
+            if(f.createNewFile()) {
+                FileWriter writer = new FileWriter(f);
+                writer.write(fileContent);
+                writer.close();
+            }
+        } catch(IOException e) {
+            System.out.println("Could not write to file. Invalid path. Or something else. I don't really know.");
+        }
+    }
 
     MatchList searchFileForPhraseByTag(String keyphrase, String tag) {
         MatchList ml = new MatchList(new File(FILEPATH).getName());
@@ -155,4 +172,21 @@ class FileHelper {
     boolean containsTag(String tag){
         return readFileToStr().contains("#" + tag + "#");
     }
+
+
+    public Boolean exportAsPDF(String HTML) { // exports given html as pdf to the location of the FH
+        /*
+        first, save the file as an html file in the desired location.
+        Then, convert the text to a pdf using aspose
+         */
+        String htmlPath = FILEPATH.replace("pdf", "html"); // I do this so that the user still sees that they're saving a pdf file
+        FileHelper.writeFile(HTML, htmlPath);
+
+        HtmlLoadOptions htmlOptions = new HtmlLoadOptions();
+        Document doc = new Document (htmlPath, htmlOptions);
+        doc.save(FILEPATH);
+
+        return (new File(htmlPath)).delete();
+    }
+
 }

@@ -5,7 +5,9 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -30,7 +32,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 // markdown imports
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -144,7 +145,7 @@ public class ViewController extends InfoHelper implements Initializable {
                 new FileChooser.ExtensionFilter("markdown documents", "*.md"),
                 new FileChooser.ExtensionFilter("html documents", "*.html")
         );
-        fc.setInitialDirectory(new File(getNoteFolderPath()));
+        fc.setInitialDirectory(new File(getRepositoryPath()));
 
         options = new MutableDataSet();
         options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), StrikethroughExtension.create()));
@@ -196,8 +197,8 @@ public class ViewController extends InfoHelper implements Initializable {
 
     public void handleSaveFileAction(ActionEvent actionEvent) {
         Tab tmp = getCurrentTab();
-        if(new File(getNoteFolderPath() + "/" + tmp.getText()).exists()) { // if a file already exists then overwrite it
-            FileHelper fh = new FileHelper(getNoteFolderPath() + "/" + tmp.getText());
+        if(new File(getRepositoryPath() + "/" + tmp.getText()).exists()) { // if a file already exists then overwrite it
+            FileHelper fh = new FileHelper(getRepositoryPath() + "/" + tmp.getText());
             fh.writeToFile(((TextArea) tmp.getContent()).getText());
         }else{
             handleSaveFileAsAction(new ActionEvent()); // if the file doesn't exist then go to 'save as...'
@@ -207,7 +208,7 @@ public class ViewController extends InfoHelper implements Initializable {
         Tab tmp = getCurrentTab();
         selectedFile = openFileChooser("Save as...", "save", tmp.getText()); // saves lines of code to use seperate method
         if (selectedFile != null){
-            FileHelper fh = new FileHelper(getNoteFolderPath() + "/" + selectedFile.getName());
+            FileHelper fh = new FileHelper(getRepositoryPath() + "/" + selectedFile.getName());
             fh.writeFile(((TextArea) tmp.getContent()).getText());
             tmp.setText(selectedFile.getName());
         }else{
@@ -226,7 +227,7 @@ public class ViewController extends InfoHelper implements Initializable {
             if (Model.showConfirmationMsg("Are you sure you want to delete this file, \'" + getCurrentTab().getText() + "\'?",
                     "Press \'OK\' to confirm."
                     )) {
-                if((new FileHelper(getNoteFolderPath() + "/" + getCurrentTab().getText())).deleteFile()){
+                if((new FileHelper(getRepositoryPath() + "/" + getCurrentTab().getText())).deleteFile()){
                     Model.showInformationMsg("Success", getCurrentTab().getText() + " successfully deleted from directory path.");
                     tabPane.getTabs().remove(getCurrentTab());
                 }else{
@@ -235,6 +236,25 @@ public class ViewController extends InfoHelper implements Initializable {
             }
         }else{
             Model.showErrorMsg("No File to Delete", "Open a file to delete it.");
+        }
+    }
+
+    public void handlePDFExport(ActionEvent actionEvent){
+        String[][] pdfExtension = {{"PDF Document", "*.pdf"}};
+
+        String path = (openFileChooser("Save PDF", "save", "", pdfExtension).getAbsolutePath());
+        if(path!=null) { //TODO: figure out why this warning exists
+            FileHelper fh = new FileHelper(path);
+
+            SavePDFTask savePDF = new SavePDFTask(fh, getRenderedText());
+            savePDF.addEventFilter(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent event) {
+                    Model.showInformationMsg("File Successfully Exported!", "File location: " + path);
+                }
+            });
+
+            new Thread(savePDF).start();
         }
     }
 
@@ -248,7 +268,7 @@ public class ViewController extends InfoHelper implements Initializable {
             searchStage.setScene(searchScene);
             searchStage.showAndWait();
             if(!getTmpInfo().equals("")){
-                createNewNote(model.stringArrToString((new FileHelper(getNoteFolderPath()+"/"+ getTmpInfo())).readFileToArr()), getTmpInfo());
+                createNewNote(model.stringArrToString((new FileHelper(getRepositoryPath()+"/"+ getTmpInfo())).readFileToArr()), getTmpInfo());
             }
         }catch(IOException e){
             e.printStackTrace();
@@ -360,7 +380,7 @@ public class ViewController extends InfoHelper implements Initializable {
                 if(!getTmpInfo().equals("") ){ // in this case, the tmp info becomes the path to the file currently open
                     FileHelper jsonTemplatesFile = new FileHelper(getDataFolderPath() + "/templates.json");
                     JSONObject jsonTemplates = jsonTemplatesFile.readToJSONObj();
-                    FileHelper templateFile = new FileHelper(getNoteFolderPath() + "/" + getCurrentTab().getText());
+                    FileHelper templateFile = new FileHelper(getRepositoryPath() + "/" + getCurrentTab().getText());
                     JSONArray tags = new JSONArray();
                     for (String tag : templateFile.searchForTags()){
                         tags.add(tag);
@@ -434,14 +454,49 @@ public class ViewController extends InfoHelper implements Initializable {
             Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
         }
     }
+    private String getRenderedText(){ // returns the text in HTML depending on render settings
+        if(!tabPaneIsEmpty()) { // ensures there is a tab to render...
+            String tabContent = ((TextArea)getCurrentTab().getContent()).getText();
+
+            switch(renderType){
+                case BOTH:
+                    return markdownToHTML(tabContent) + scriptTags(); // has to parse the html from markdown first, then split the tags
+                                                                      // bc markdownToHTML depends on the \n which the model.parse...Breaks removes
+                case MARKDOWN:
+                    return markdownToHTML(tabContent);
+                case MATHJAX:
+                    return tabContent + scriptTags();
+                case TEXT:
+                    return tabContent;
+                default:
+                    return "";
+            }
+
+        }else{
+            Model.showErrorMsg("No Document Selected", "Please open a document to render it and try again.");
+        }
+        return "";
+    }
 
     private Tab getCurrentTab(){ return tabPane.getSelectionModel().getSelectedItem(); }
     private boolean tabPaneIsEmpty(){ return tabPane.getTabs().size() < 1; }
 
-    private File openFileChooser(String title, String type, String initialFileName){
+
+    private File openFileChooser(String title, String type, String initialFileName) throws NullPointerException{
+        return openFileChooser(title, type, initialFileName, fc); // default value for the file chooser
+    }
+    public File openFileChooser(String title, String type, String initialFileName, String[][] extensionFilters) throws NullPointerException{ // each array should be no more than 2 elements long
+        FileChooser customFC = new FileChooser();
+        for (String[] exts : extensionFilters){
+            customFC.getExtensionFilters().addAll( new FileChooser.ExtensionFilter(exts[0], exts[1]) );
+        }
+        return openFileChooser(title, type, initialFileName, customFC);
+        // this just creates a file chooser with custom extensions (e.g. PDF)
+    }
+    private File openFileChooser(String title, String type, String initialFileName, FileChooser fc){ //
         fc.setTitle(title);
         fc.setInitialFileName(initialFileName);
-        fc.setInitialDirectory(new File(getNoteFolderPath()));
+        fc.setInitialDirectory(new File(getRepositoryPath()));
         switch(type){
             case "save":
                 return fc.showSaveDialog(null);
@@ -450,7 +505,7 @@ public class ViewController extends InfoHelper implements Initializable {
             default:
                 System.out.println("Error: typo in function call");
         }
-        return new File(getNoteFolderPath());
+        return new File(getRepositoryPath());
     }
 
     private String markdownToHTML(String markdown){ // code from flexmark github homepage

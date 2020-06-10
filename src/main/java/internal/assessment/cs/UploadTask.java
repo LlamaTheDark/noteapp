@@ -23,7 +23,7 @@ public class UploadTask extends Task { //TODO: EITHER SAY REQUIRES RESTART BEFOR
     @Override
     protected Object call() throws Exception {
         this.updateMessage("Starting Sync...");
-        File dir = new File(ih.getNoteFolderPath());
+        File dir = new File(ih.getRepositoryPath());
         File[] localFiles = dir.listFiles();
         int totalFiles = localFiles.length;
         int uploadedFiles = 0;

@@ -55,7 +55,7 @@ public class Main extends Application { // TODO: CHANGE ALL DIRECTORIES TO FIT W
     @Override
     public void start(Stage primaryStage) throws IOException {
         //Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
-        ih.setStyleType("terminal");
+        ih.setStyleType("dark");
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("main.fxml"));
         Parent root = loader.load();

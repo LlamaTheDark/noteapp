@@ -39,7 +39,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
         resultsFileNames.clear();
         txtAlert.setText("");
         numResults = 0;
-        File dir = new File(getNoteFolderPath());
+        File dir = new File(getRepositoryPath());
 
         if(!txtKeyphrase.getText().equals("")) {
             String tag;
@@ -117,7 +117,7 @@ public class SearchSceneController extends InfoHelper implements Initializable {
         JSONObject jsonInfo = jsonFileHelper.readToJSONObj();
         JSONArray tags = new JSONArray();
 
-        for(File f : Objects.requireNonNull(new File(getNoteFolderPath()).listFiles())){
+        for(File f : Objects.requireNonNull(new File(getRepositoryPath()).listFiles())){
             FileHelper fh = new FileHelper(f.getPath());
             for (String tag : fh.searchForTags()){
                 if(!tags.contains(tag)){

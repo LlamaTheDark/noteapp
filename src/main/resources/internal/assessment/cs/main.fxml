@@ -31,7 +31,7 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnSave" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAction" text="Save" />
                   <MenuItem fx:id="menuBtnSaveAs" disable="true" mnemonicParsing="false" onAction="#handleSaveFileAsAction" text="Save As..." />
-                  <MenuItem mnemonicParsing="false" text="Export as PDF..." />
+                  <MenuItem fx:id="menuBtnPDFExport" mnemonicParsing="false" onAction="#handlePDFExport" text="Export as PDF..." />
                   <MenuItem fx:id="menuBtnDeleteFile" mnemonicParsing="false" onAction="#handleDeleteFileAction" text="Delete" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="menuBtnSetNotesFolder" mnemonicParsing="false" onAction="#handleSetNotesFolderAction" text="Set Notes Folder" />

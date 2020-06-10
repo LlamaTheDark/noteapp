@@ -20,7 +20,7 @@ public class FolderPathController extends InfoHelper implements Initializable { 
     public void openFindFolderWindow(ActionEvent actionEvent) {
         DirectoryChooser findNoteFolder = new DirectoryChooser();
         findNoteFolder.setTitle("Find folder...");
-        findNoteFolder.setInitialDirectory(new File(getNoteFolderPath()));
+        findNoteFolder.setInitialDirectory(new File(getRepositoryPath()));
         File selectedDirectory = findNoteFolder.showDialog(null);
         if (selectedDirectory != null) {
             txtFldPath.setText(selectedDirectory.getPath());
@@ -35,6 +35,6 @@ public class FolderPathController extends InfoHelper implements Initializable { 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        txtFldPath.setText(getNoteFolderPath());
+        txtFldPath.setText(getRepositoryPath());
     }
 }

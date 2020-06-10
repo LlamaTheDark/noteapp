@@ -17,7 +17,7 @@ class InfoHelper{
         tmp.put("noteFolderPath", noteFolderPath);
         fh.writeToFile(tmp.toJSONString());
     }
-    String getNoteFolderPath() {
+    String getRepositoryPath() {
         return (String)fh.readToJSONObj().get("noteFolderPath");
     }
 

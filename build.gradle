@@ -11,6 +11,10 @@ sourceCompatibility = 11
 
 repositories {
     mavenCentral()
+    maven { // custom maven repo?
+        url 'https://repository.aspose.com/repo/'
+    }
+    // see: https://docs.gradle.org/current/userguide/declaring_repositories.html
 }
 
 configurations{
@@ -22,7 +26,16 @@ dependencies {
     compile 'com.vladsch.flexmark:flexmark-all:0.42.12'
     compile 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'com.dropbox.core:dropbox-core-sdk:3.1.1'
+
+//    // https://mvnrepository.com/artifact/com.openhtmltopdf/openhtmltopdf-core
+//    compile group: 'com.openhtmltopdf', name: 'openhtmltopdf-core', version: '1.0.2'
+//    compile group: 'com.openhtmltopdf', name: 'openhtmltopdf-pdfbox', version: '1.0.2'
+
+    compile group: 'com.aspose', name: 'aspose-pdf', version: '20.4'
+
 }
+
+
 
 javafx {
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.web', 'javafx.media' ]

@@ -17,7 +17,7 @@ public class DownloadTask extends Task {
 
     @Override
     protected Object call() throws Exception {
-        File dir = new File(ih.getNoteFolderPath());
+        File dir = new File(ih.getRepositoryPath());
         File[] localFiles = dir.listFiles();
         int totalFiles = getFolderMetaData().size();
         int downloadedFiles = 0;
@@ -53,7 +53,7 @@ public class DownloadTask extends Task {
                     }/*else{
                         //this.updateMessage("ERROR: Could not delete file.");
                     }*/
-                }else if(downloadFile(new File(ih.getNoteFolderPath() + "/" + dbxF.getName()))){
+                }else if(downloadFile(new File(ih.getRepositoryPath() + "/" + dbxF.getName()))){
                     this.updateMessage("Successfully downloaded: " + f.getName());
                     downloadedFiles++;
                     this.updateProgress((double)downloadedFiles, (double)totalFiles);
