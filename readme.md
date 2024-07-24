@@ -1,4 +1,4 @@
-# WELCOME to the csia Note App
+# WELCOME to the Note App
 ### Before you can sync files with Dropbox you must authorize your account through the 'Sync' menu.
 
 * You can manually sync up with Dropbox from the 'Sync' menu.
